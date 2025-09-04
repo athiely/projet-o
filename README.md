@@ -8,20 +8,30 @@ O LabKey tem como objetivo facilitar a gestão e controle das reservas de chaves
 - **Discentes**: Alunos que utilizam os laboratórios para projetos, monitorias ou atividades acadêmicas.
 - **Terceirizados**: Auxiliares de limpeza e técnicos que precisam acessar os laboratórios para realizar serviços de limpeza e manutenção.
 
-## Elementos da Identidade Visual
+## Identidade visual - LabKey
 
-- **Ícones Intuitivos**: Melhora a usabilidade, a experiência do usuário (UX) e a comunicação visual, tornando a navegação mais simples.
-- **Cores**:
-  - **Verde**: Traz um ar de confiança.
-  - **Branco**: Evoca limpeza, simplicidade e espaço.
-  - **Cinza**: Adiciona neutralidade.
+### Paleta de cores
 
-- **Tipografia**:
-  - **Logo**: A fonte **Norwester** combina modernidade, legibilidade e personalidade.
-  - **Site**: A fonte **Lexend** combina legibilidade e acessibilidade, proporcionando clareza e evitando fadiga visual do usuário.
+A paleta de cores do LabKey foi cuidadosamente desenvolvida para reforçar os valores do sistema: confiança, praticidade e organização.  
+Cada cor foi selecionada com base em estudos de psicologia e usabilidade, visando uma experiência intuitiva e segura para os usuários durante a reserva e o controle de chaves.
 
-## Justificativas
+| COR         | HEX      | Significado |
+|-------------|----------|-------------|
+| Verde vívido | `#03BF63` | Transmite sensações de segurança e confiabilidade, incentivando a interação do usuário com a marca |
+| Branco      | `#FFFFFF` | Representa limpeza, simplicidade e leveza. Será utilizado para proporcionar uma aparência visual mais clara |
+| Cinza       | `#83878E` | Será usado em elementos secundários, como ícones e textos auxiliares, evitando que concorram com os elementos de destaque e evitando poluição visual |
 
-- **Ícones Intuitivos**: Melhoram a usabilidade e a comunicação visual.
-- **Cores**: Criam uma atmosfera de confiança, limpeza e neutralidade.
-- **Tipografia**: Aumenta a legibilidade e a acessibilidade, proporcionando uma experiência visual agradável.
+### Tipografia
+
+Entre as tipografias escolhidas, está a **Norwester**, selecionada por seu estilo moderno, geométrico e de alta legibilidade.  
+Essa fonte transmite firmeza e clareza, reforçando a confiabilidade e a seriedade da marca.  
+Além disso, seus traços marcantes ajudam a destacar títulos e informações importantes, garantindo uma hierarquia visual clara na interface.
+
+E temos a **Lexend**, que foi desenvolvida com foco em acessibilidade, sendo ideal para textos longos.  
+Essa tipografia assegura legibilidade inclusiva e reduz a fadiga visual durante a leitura de conteúdos extensos.
+
+### Estilo Visual
+
+O estilo adotado do nosso site segue um padrão **minimalista e funcional**, priorizando clareza e usabilidade.  
+Os elementos são organizados de forma limpa, com espaços bem definidos, evitando excessos que possam comprometer a experiência do usuário.
+ando uma experiência visual agradável.
