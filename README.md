@@ -23,7 +23,7 @@ Cada cor foi selecionada com base em estudos de psicologia e usabilidade, visand
 
 ### Tipografia
 
-Entre as tipografias escolhidas, está a **Norwester**, selecionada por seu estilo moderno, geométrico e de alta legibilidade. Essa fonte transmite firmeza e clareza, reforçando a confiabilidade e a seriedade da marca. Além disso, seus traços marcantes ajudam a destacar títulos e informações importantes, garantindo uma hierarquia visual clara na interface.
+Entre as tipografias escolhidas, está a **Norwester**, selecionada por seu estilo moderno, geométrico e de alta legibilidade. Essa fonte transmite firmeza e clareza, reforçando a confiabilidade e a seriedade da marca.
 
 E temos a **Lexend**, que foi desenvolvida com foco em acessibilidade, sendo ideal para textos longos.  
 Essa tipografia assegura legibilidade inclusiva e reduz a fadiga visual durante a leitura de conteúdos extensos.
