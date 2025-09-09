@@ -36,23 +36,28 @@ ando uma experiência visual agradável.
 
 ## Valores do LabKey
 
-O LabKey procura transmitir os seguintes valores com sua identidade visual.
+O LabKey procura transmitir os seguintes valores por meio de sua identidade visual:
 
-1. **Praticidade**
-    - **Motivo:** Queremos simplificar o processo de reserva e devolução de chaves, sendo esse um sistema intuitivo e ágil para que o utiliza para essa finalidade.
-    - **Comunicação visual:** A aplicação transmitira esse valor por meio de layout minimalista – visando reduzir as distrações que o usuario possa ter –  aliando isso à uma tipografia legivel, proporcionando para o usuario navegar de maneira clara e direta.
-2. **Organização**
-    - **Motivo**: Queremos que manter as informações estruturadas sobre as reservas, permições e histórico de uso evitando conflitos e descontrole no uso.
-    - **Comunicação visual:** Elementos com cores bem definidas, espaçamento e hierarquia visual dos elementos da aplicação.
-3. Confiabilidade
-    - **Motivo**: Queremos a garantia de que os usuários possam confiar no controle de acesso às chaves e na integridade do sistema.
-    - **Comunicação visual:** Uso do Verde vívido (#03BF63), cor que transmite a ideia de segurança, estabilidade e confiança. Fontes como a sem serifa como Lexend, legiveis, amigaveis e acessiveis. Alem disso fornecer uma aplicação que seja concistente e previsivel para o usuaário.
-4. **Eficiência**
-    - Motivo: Queremos que o usuário gaste o menor tempo com processos manuais, visando tornar o controle mais rapido e funcional.
-    - Comunicação visual: Um design simples, minimalista o que reduz a poluição visual e facilita a localização das informações, além de icones visiveis e com cores destacaveis e concistentes.
-5. **Clareza** 
-    - Motivo: Queremos que o usuário saiba o que deve fazer ao utilizar o sistema, e que seja apresentado a ele as informações de forma direta e que evite ambiguildades no momento do uso.
-    - Comunicação visual: Contraste de cores e hierarquia tipográfica para garantir uma leitura clara e destacar informações relevantes ao usuário.
-6. **Acessibilidade**
-    - Motivo: Queremos que nosso sistema seja acessiveu a todos os perfis de usuários, independente de qualquer limitaçõa.
-    - Comunicação visual: Uso de cores que sejam reconheciveis, uso de uma tipografia legivel e constraste adequado entre os elementos.
+1. **Praticidade**  
+   - **Motivo:** Queremos simplificar o processo de reserva e devolução de chaves, tornando o sistema intuitivo e ágil para quem o utiliza para essa finalidade.  
+   - **Comunicação visual:** A aplicação transmitirá esse valor por meio de um layout minimalista – visando reduzir as distrações que o usuário possa ter – aliado a uma tipografia legível, proporcionando uma navegação clara e direta.
+
+2. **Organização**  
+   - **Motivo:** Queremos manter as informações estruturadas sobre reservas, permissões e histórico de uso, evitando conflitos e descontrole.  
+   - **Comunicação visual:** Elementos com cores bem definidas, espaçamento adequado e hierarquia visual clara entre os elementos da aplicação.
+
+3. **Confiabilidade**  
+   - **Motivo:** Queremos garantir que os usuários possam confiar no controle de acesso às chaves e na integridade do sistema.  
+   - **Comunicação visual:** Uso do verde vívido (#03BF63), cor que transmite segurança, estabilidade e confiança. Fontes sem serifa, como a Lexend, legíveis, amigáveis e acessíveis. Além disso, fornecer uma aplicação consistente e previsível para o usuário.
+
+4. **Eficiência**  
+   - **Motivo:** Queremos que o usuário gaste o menor tempo possível com processos manuais, tornando o controle mais rápido e funcional.  
+   - **Comunicação visual:** Design simples e minimalista, reduzindo a poluição visual e facilitando a localização das informações, aliado a ícones visíveis, com cores destacáveis e consistentes.
+
+5. **Clareza**  
+   - **Motivo:** Queremos que o usuário saiba exatamente o que fazer ao utilizar o sistema, apresentando as informações de forma direta e evitando ambiguidades.  
+   - **Comunicação visual:** Contraste de cores e hierarquia tipográfica adequados, garantindo leitura clara e destacando informações relevantes ao usuário.
+
+6. **Acessibilidade**  
+   - **Motivo:** Queremos que o sistema seja acessível a todos os perfis de usuários, independentemente de quaisquer limitações.  
+   - **Comunicação visual:** Uso de cores facilmente reconhecíveis, tipografia legível e contraste adequado entre os elementos.
