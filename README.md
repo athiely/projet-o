@@ -61,3 +61,11 @@ O LabKey procura transmitir os seguintes valores por meio de sua identidade visu
 6. **Acessibilidade**  
    - **Motivo:** Queremos que o sistema seja acessível a todos os perfis de usuários, independentemente de quaisquer limitações.  
    - **Comunicação visual:** Uso de cores facilmente reconhecíveis, tipografia legível e contraste adequado entre os elementos.
+
+7. **Equipe**
+Athiely Taiany 
+Igor Bruno
+Joaquim Antônio
+Licurgo Keven
+Maria Eduarda
+Melissa Karen
