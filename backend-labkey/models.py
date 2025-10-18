@@ -8,7 +8,8 @@ class Usuario(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nome: str
     email: str
-    tipo: str
+    senha: str  
+    tipo: str = "comum"
 
 # Chave
 class Chave(SQLModel, table=True):
@@ -17,7 +18,6 @@ class Chave(SQLModel, table=True):
     laboratorio: str
     descricao: str
     status: str
-
 
 # Reserva
 class Reserva(SQLModel, table=True):
