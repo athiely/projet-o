@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filos do Reino Animal - Tabela Comparativa Aprofundada</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #0056b3;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        .intro p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        /* Estilo da Tabela Principal */
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px; /* Garante que a tabela não fique muito estreita em telas pequenas */
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 10px;
+            text-align: left;
+            vertical-align: top;
+            font-size: 0.9em;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        td.filo {
+            font-weight: bold;
+            background-color: #e6f0ff;
+            cursor: pointer;
+        }
+        td.filo:hover {
+            background-color: #cce0ff;
+        }
+        
+        /* Seção de Detalhes do Filo */
+        .filo-detail-section {
+            display: none; /* Inicialmente oculta */
+            border: 1px solid #007bff;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #e6f0ff;
+        }
+        .filo-detail-section h3 {
+            color: #0056b3;
+            margin-top: 0;
+        }
+        .filo-detail-section p {
+            margin-bottom: 5px;
+        }
+        .filo-detail-section strong {
+            display: inline-block;
+            min-width: 150px;
+            color: #333;
+        }
+        
+        /* Media Query para Responsividade da Tabela */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            .container {
+                width: 95%;
+                padding: 10px;
+            }
+            /* Remove min-width para permitir rolagem e adaptação */
+            table {
+                min-width: 800px;
+            }
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Filos do Reino Animal - Tabela Comparativa Aprofundada</h1>
+        <p>Um Guia Didático sobre as Características dos Invertebrados</p>
+    </header>
+
+    <div class="container">
+        <section class="intro">
+            <h2>Introdução</h2>
+            <p>O Reino Animalia (Metazoa) é vasto e diversificado, sendo classificado em grupos menores chamados Filos. A organização dos animais é baseada em características evolutivas, como o desenvolvimento embrionário, a presença de folhetos embrionários, o tipo de celoma (cavidade corporal) e a simetria corporal.</p>
+            <p>A tabela a seguir apresenta uma comparação detalhada das principais características dos filos de animais invertebrados estudados na Biologia, tornando o aprendizado mais fácil e aprofundado. Clique no nome de cada Filo na tabela para ver um resumo detalhado!</p>
+        </section>
+
+        <section id="tabela-filos">
+            <h2>Tabela Comparativa de Filos Animais Invertebrados</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Filo</th>
+                            <th scope="col">Desenvolvimento Embrionário / Blastóporo</th>
+                            <th scope="col">Folhetos Embrionários</th>
+                            <th scope="col">Celoma</th>
+                            <th scope="col">Simetria</th>
+                            <th scope="col">Sistema Digestório</th>
+                            <th scope="col">Sistema Respiratório</th>
+                            <th scope="col">Sistema Excretor</th>
+                            <th scope="col">Destaques e Individualidades</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="filo" onclick="showDetail('Poríferos')">Poríferos</td>
+                            <td>Desenvolvimento simples; Sem blastóporo definido (não formam gástrula típica).</td>
+                            <td>Sem folhetos verdadeiros (sem tecidos organizados).</td>
+                            <td>Sem celoma.</td>
+                            <td>Assimetria (ou forma variável).</td>
+                            <td>Sem sistema digestório; Alimentam-se por filtração com células especiais (coanócitos).</td>
+                            <td>Troca gasosa por difusão através das células.</td>
+                            <td>Sem órgãos excretores complexos; Excreção por difusão.</td>
+                            <td>Possuem poros, canais e coanócitos (filtram a água).</td>
+                        </tr>
+                        <tr>
+                            <td class="filo" onclick="showDetail('Cnidários')">Cnidários</td>
+                            <td>Desenvolvimento com formas de pólipo e/ou medusa; há larvas livres. Blastóporo origina a abertura que funciona como boca (cavidade gastrovascular).</td>
+                            <td>Diploblásticos: 2 folhetos (ectoderme e endoderme).</td>
+                            <td>Sem celoma (cavidade gastrovascular se encarrega de várias funções).</td>
+                            <td>Simetria radial (em adultos) - partes ao redor de um eixo.</td>
+                            <td>Cavidade gastrovascular com uma única abertura (entrada e saída pelo mesmo orifício).</td>
+                            <td>Troca gasosa por difusão; Algumas espécies têm estruturas simples.</td>
+                            <td>Excreção por difusão através do corpo.</td>
+                            <td>Têm cnidócitos (células urticantes) e tentáculos.</td>
+                        </tr>
+                        <tr>
+                            <td class="filo" onclick="showDetail('Platelmintos')">Platelmintos</td>
+                            <td>Protostomios (blastóporo forma a boca em muitos casos). Desenvolvimento direto ou com larvas.</td>
+                            <td>Triblásticos: 3 folhetos (ectoderme, mesoderme, endoderme).</td>
+                            <td>Acelomados (não possuem celoma verdadeiro).</td>
+                            <td>Simetria bilateral (lado esquerdo/direito).</td>
+                            <td>Sistema digestório incompleto (boca); Alguns parasitas perderam o sistema.</td>
+                            <td>Respiração por difusão pelo corpo (são achatados para facilitar troca gasosa).</td>
+                            <td>Protonefrídios (células-flama) em muitos para regular líquidos e excretar resíduos.</td>
+                            <td>Corpo achatado; Inclui planárias (livres) e vermes parasitas (ex.: tênias).</td>
+                        </tr>
+                        <tr>
+                            <td class="filo" onclick="showDetail('Nematelmintos')">Nematelmintos</td>
+                            <td>Protostômios (blastóporo origina a boca). Desenvolvimento com larvas; alguns ciclos parasitários.</td>
+                            <td>Triblásticos (3 folhetos).</td>
+                            <td>Pseudocelomados (têm cavidade falsa entre mesoderme e endoderme).</td>
+                            <td>Simetria bilateral.</td>
+                            <td>Sistema digestório completo (boca e ânus).</td>
+                            <td>Respiração por difusão através da cutícula (são finos).</td>
+                            <td>Sistema excretor simples (canais ou células renette em alguns).</td>
+                            <td>Corpo cilíndrico e alongado; Inclui lombrigas e vermes redondos.</td>
+                        </tr>
+                        <tr>
+                            <td class="filo" onclick="showDetail('Anelídeos')">Anelídeos</td>
+                            <td>Protostômios (boca se forma primeiro). Desenvolvimento com estágio larval em alguns; corpo segmentado desde cedo.</td>
+                            <td>Triblásticos.</td>
+                            <td>Celomados - celoma dividido por septos entre segmentos.</td>
+                            <td>Simetria bilateral e corpo segmentado (metâmeros).</td>
+                            <td>Sistema digestório completo e dividido (faringe, intestino, ânus).</td>
+                            <td>Troca gasosa por pele úmida ou difusão; Algumas espécies têm brânquias.</td>
+                            <td>Metanefrídios em cada segmento - funcionamento semelhante a rins.</td>
+                            <td>Corpo segmentado; Tem setas (cílios ou cerdas) em muitos; Sistema circulatório fechado.</td>
+                        </tr>
+                        <tr>
+                            <td class="filo" onclick="showDetail('Moluscos')">Moluscos</td>
+                            <td>Protostomios. Desenvolvimento com larvas (troca ou véliger) em muitos grupos.</td>
+                            <td>Triblásticos.</td>
+                            <td>Celoma reduzido; Muitos têm hemococo/hemolinfa como espaço sanguíneo.</td>
+                            <td>Simetria bilateral (alguns com torção, ex.: gastrópodes).</td>
+                            <td>Sistema digestório completo; Muitos têm rádula para raspar alimento.</td>
+                            <td>Brânquias (aquáticas); Pulmões (terrestres); Troca por difusão.</td>
+                            <td>Nefridios (rins) simples para excreção e regulação.</td>
+                            <td>Tem pé muscular, manto e geralmente concha; Rádula em muitos.</td>
+                        </tr>
+                        <tr>
+                            <td class="filo" onclick="showDetail('Artrópodes')">Artrópodes</td>
+                            <td>Protostomios. Desenvolvimento com várias fases (muitas vezes com metamorfose).</td>
+                            <td>Triblásticos.</td>
+                            <td>Celoma reduzido; Grande hemocelo (cavidade com hemolinfa) que substitui parte do celoma.</td>
+                            <td>Simetria bilateral; Corpo segmentado com apêndices articulados.</td>
+                            <td>Sistema digestório completo e muito especializado (gânglios digestivos).</td>
+                            <td>Brânquias (aquáticos), sistema traqueal (insetos) ou pulmões foliáceos (aranhas).</td>
+                            <td>Túbulos de Malpighi (insetos) ou glândulas verdes (crustáceos).</td>
+                            <td>Exoesqueleto de quitina que exige muda; Apêndices articulados - é o grupo mais diverso.</td>
+                        </tr>
+                        <tr>
+                            <td class="filo" onclick="showDetail('Equinodermos')">Equinodermos</td>
+                            <td>Deuterostomios (blastóporo origina o ânus, depois forma-se a boca). Desenvolvimento com larvas livres.</td>
+                            <td>Triblásticos.</td>
+                            <td>Celomados - celoma grande e importante para o sistema ambulacral.</td>
+                            <td>Simetria radial na fase adulta (pentaradial) e bilateral na larva.</td>
+                            <td>Sistema digestório geralmente completo.</td>
+                            <td>Troca gasosa por brânquias dermais, pés ambulacrários e difusão.</td>
+                            <td>Excreção por difusão e células celomáticas; Não têm rins complexos.</td>
+                            <td>Sistema ambulacral e capacidade de regeneração.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section id="detalhes-filos">
+            <h2>Detalhes e Curiosidades</h2>
+            <p>Clique nos nomes dos Filos na tabela acima para ver os detalhes aprofundados.</p>
+
+            <div id="Poríferos-detail" class="filo-detail-section">
+                <h3>Filo Poríferos</h3>
+                <p><strong>Desenvolvimento/Blastóporo:</strong> Simples, sem blastóporo definido.</p>
+                <p><strong>Reprodução:</strong> Sexual (alguns hermafroditas) e assexual (brotamento).</p>
+                <p><strong>Função Única:</strong> Filtração da água através de poros, canais e coanócitos.</p>
+            </div>
+            
+            <div id="Cnidários-detail" class="filo-detail-section">
+                <h3>Filo Cnidários</h3>
+                <p><strong>Folhetos/Celoma:</strong> Diploblásticos e acelomados.</p>
+                <p><strong>Reprodução:</strong> Sexual e assexual (brotamento, alternância de fases).</p>
+                <p><strong>Função Única:</strong> Possuem cnidócitos (células urticantes) para defesa e captura de presas.</p>
+            </div>
+            
+            <div id="Platelmintos-detail" class="filo-detail-section">
+                <h3>Filo Platelmintos</h3>
+                <p><strong>Folhetos/Celoma:</strong> Triblásticos e acelomados.</p>
+                <p><strong>Reprodução:</strong> Muitos são hermafroditas; alguns têm ciclos complexos com hospedeiros (parasitas).</p>
+                <p><strong>Função Única:</strong> Protonefrídios (células-flama) para excreção. Corpo achatado (facilita a difusão).</p>
+            </div>
+            
+            <div id="Nematelmintos-detail" class="filo-detail-section">
+                <h3>Filo Nematelmintos</h3>
+                <p><strong>Folhetos/Celoma:</strong> Triblásticos e pseudocelomados.</p>
+                <p><strong>Sistema Digestório:</strong> Completo (boca e ânus).</p>
+                <p><strong>Reprodução:</strong> Geralmente sexos separados; muitos são parasitas.</p>
+            </div>
+            
+            <div id="Anelídeos-detail" class="filo-detail-section">
+                <h3>Filo Anelídeos</h3>
+                <p><strong>Folhetos/Celoma:</strong> Triblásticos e celomados (celoma dividido por septos).</p>
+                <p><strong>Excreção/Destaque:</strong> Metanefrídios (semelhante a rins) em cada segmento. Corpo segmentado (metâmeros).</p>
+                <p><strong>Reprodução:</strong> Podem ser hermafroditas (ex.: minhocas) ou ter sexos separados.</p>
+            </div>
+
+            <div id="Moluscos-detail" class="filo-detail-section">
+                <h3>Filo Moluscos</h3>
+                <p><strong>Celoma/Destaque:</strong> Celoma reduzido. Possuem pé muscular, manto e geralmente uma concha.</p>
+                <p><strong>Sistema Digestório:</strong> Completo, com rádula para raspar alimento na maioria.</p>
+                <p><strong>Excreção/Reprodução:</strong> Nefrídios (rins) simples. Maioria com sexos separados.</p>
+            </div>
+
+            <div id="Artrópodes-detail" class="filo-detail-section">
+                <h3>Filo Artrópodes</h3>
+                <p><strong>Destaques:</strong> Exoesqueleto de quitina (exige muda) e apêndices articulados - **o grupo mais diverso**.</p>
+                <p><strong>Sistema Respiratório:</strong> Brânquias (aquáticos), sistema traqueal (insetos) ou pulmões foliáceos (aranhas).</p>
+                <p><strong>Excreção:</strong> Túbulos de Malpighi (insetos) ou glândulas verdes (crustáceos).</p>
+            </div>
+
+            <div id="Equinodermos-detail" class="filo-detail-section">
+                <h3>Filo Equinodermos</h3>
+                <p><strong>Desenvolvimento/Simetria:</strong> Deuterostomios. Simetria radial (pentaradial) em adultos.</p>
+                <p><strong>Destaques:</strong> Celoma grande (importante para o sistema ambulacral). Têm pés ambulacrários e capacidade de regeneração.</p>
+                <p><strong>Reprodução:</strong> Maioria com sexos separados; fecundação externa.</p>
+            </div>
+        </section>
+        
+        <footer>
+            <p style="text-align: center; margin-top: 40px; font-size: 0.8em; color: #666;">Dados compilados a partir da Tabela Simplificada dos Filos do Reino Animal.</p>
+        </footer>
+    </div>
+
+    <script>
+        function showDetail(filoName) {
+            // Oculta todas as seções de detalhes
+            const sections = document.querySelectorAll('.filo-detail-section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Mostra a seção de detalhes específica
+            const detailSection = document.getElementById(filoName + '-detail');
+            if (detailSection) {
+                detailSection.style.display = 'block';
+                // Rola para a seção de detalhes para melhor didática
+                detailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    </script>
+
+</body>
+</html>
