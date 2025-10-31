@@ -1,8 +1,10 @@
 from typing import List, Annotated
 from sqlmodel import SQLModel, Session, create_engine, select
-from fastapi import FastAPI, Depends, HTTPException
-from models import Usuario, Chave, Reserva
+from fastapi import FastAPI, Depends, HTTPException, Request
 from contextlib import asynccontextmanager
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from models.models import Usuario, Sala, Reserva
 
 # Configuração do banco
 url = "sqlite:///labkey.db"
@@ -27,7 +29,32 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# ROTAS DE LOGIN E CADASTRO
+# --- CONFIGURAÇÕES DE ARQUIVOS ESTÁTICOS E TEMPLATES (Adicionadas/Corrigidas) ---
+
+# 1. Monta o diretório 'static' no caminho /static
+# O name="static" é usado pelo url_for no Jinja2.
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# 2. Inicializa o motor de templates, apontando para a pasta 'templates'
+templates = Jinja2Templates(directory="templates")
+
+# --------------------------------------------------------------------------------
+
+# --- ROTAS DE VIEW (PÁGINAS HTML) ---
+
+@app.get("/cadastro")
+def pagina_cadastro(request: Request):
+    """Renderiza a página de Cadastro."""
+    return templates.TemplateResponse("cadastro.html", {"request": request})
+
+@app.get("/login")
+def pagina_login(request: Request):
+    """Renderiza a página de Login."""
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+# --- ROTAS DE LOGIN E CADASTRO (APIs JSON) ---
+
 @app.post("/cadastro")
 def cadastrar_usuario(session: SessionDep, usuario: Usuario):
     # Verifica se o e-mail já existe
@@ -47,10 +74,12 @@ def login(email: str, senha: str, session: SessionDep):
     usuario = session.exec(consulta).first()
     if not usuario or usuario.senha != senha:
         raise HTTPException(status_code=401, detail="E-mail ou senha incorretos.")
+    # NOTA: Em um app real, você retornaria um token JWT aqui.
     return {"mensagem": f"Login bem-sucedido! Bem-vindo(a), {usuario.nome}."}
 
 
-# ROTAS USUÁRIOS 
+# --- ROTAS USUÁRIOS ---
+
 @app.get("/usuarios")
 def listar_usuarios(session: SessionDep) -> List[Usuario]:
     return session.exec(select(Usuario)).all()
@@ -77,21 +106,21 @@ def deletar_usuario(session: SessionDep, id: int):
     session.commit()
     return {"mensagem": "Usuário excluído com sucesso."}
     
+# --- ROTAS SALAS ---
 
-# ROTAS CHAVES 
-@app.get("/chaves")
-def listar_chaves(session: SessionDep) -> List[Chave]:
-    return session.exec(select(Chave)).all()
+@app.get("/salas") 
+def listar_salas(session: SessionDep) -> List[Sala]: 
+    return session.exec(select(Sala)).all()
 
-@app.post("/chaves")
-def cadastrar_chave(session: SessionDep, chave: Chave):
-    session.add(chave)
+@app.post("/salas") 
+def cadastrar_sala(session: SessionDep, sala: Sala): 
+    session.add(sala)
     session.commit()
-    session.refresh(chave)
-    return {"mensagem": "Chave cadastrada com sucesso!", "chave": chave}
+    session.refresh(sala)
+    return {"mensagem": "Sala cadastrada com sucesso!", "sala": sala}
     
+# --- ROTAS RESERVAS --- 
 
-# ROTAS RESERVAS 
 @app.get("/reservas")
 def listar_reservas(session: SessionDep) -> List[Reserva]:
     return session.exec(select(Reserva)).all()

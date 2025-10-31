@@ -1,31 +1,100 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAB KEY - Login</title>
-    <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
-    <div class="fundo-cinza">
-        <img src="../css/static/logo-labkey.png" alt="Logo LabKey" id="imagem-labkey-cadastro-login">
+{% extends "authBase.html" %}
 
-        <form class="formulario-cadastro-login">
-            <p>Bem-vindo ao LabKey</p>
-    
-            <div class="divisor-cinza"></div>
+{% block title %}Login de Usuário{% endblock %}
 
-            <div class="inputs-cadastro-login">
-                <input type="text" name="e-mail" id="email" placeholder="E-mail">
-                <input type="password" name="senha" id="senha" placeholder="Senha">
-                <input type="text" name="usuario-institucional" id="usuario-institucional" placeholder="Usuário Institucional">
-            </div>
+{% block header_title %}Login{% endblock %}
 
-            <div class="divisor-cinza"></div>
-    
-            <button type="submit" id="botao-enviar-formulario">Entrar</button>
-        </form>
+{% block header_description %}Entre para acessar suas reservas{% endblock %}
 
+{% block content %}
+<form
+  class="form-stl"
+  id="login-form" 
+  method="POST"
+>
+  <div class="row">
+    <div class="mb-3 col-md-12">
+      <label for="email" class="form-label">Endereço de Email</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email-log"
+        name="email"
+        required
+      />
     </div>
-</body>
-</html>
+  </div>
+
+  <div class="row">
+    <div class="mb-3 col-md-12">
+      <label for="senha" class="form-label">Senha</label>
+      <input
+        type="password"
+        class="form-control"
+        id="senha-log"
+        name="senha"
+        required
+      />
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary w-100">Entrar</button>
+  <p class="mt-3 text-center">Não tem conta? <a href="/cadastro">Cadastre-se</a></p>
+</form>
+{% endblock %}
+
+{% block page_script %}
+<script>
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email-log').value;
+    const senha = document.getElementById('senha-log').value;
+
+    const feedbackDiv = document.getElementById('feedback-message');
+    feedbackDiv.innerHTML = ''; 
+    
+    // ATENÇÃO: Mantenha o endereço correto da sua API!
+    const API_URL = "http://127.0.0.1:8000/login"; 
+
+    try {
+      // O endpoint /login da sua API espera 'email' e 'senha' como query parameters
+      // ou body fields, mas como está simples, faremos uma requisição POST com URLSearchParams
+      // para passar como form-data, ou podemos simular JSON como abaixo, ajustando a API se necessário.
+      //
+      // No seu FastAPI, a rota /login espera email e senha como parâmetros de formulário ou corpo.
+      // O jeito mais simples para a sua API atual é passar os dados no corpo.
+
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+            // A sua rota /login no FastAPI usa parâmetros separados (email: str, senha: str), 
+            // que geralmente é mais fácil de consumir como application/x-www-form-urlencoded
+            // ou usando JSON com um Pydantic model que não foi definido.
+            // Para simplicidade e compatibilidade com o que o FastAPI entende de JSON Body, 
+            // usaremos JSON, que o FastAPI deve conseguir parsear.
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({ email: email, senha: senha })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        feedbackDiv.innerHTML = `<div class="alert alert-success" role="alert"><strong>Sucesso!</strong> ${result.mensagem}</div>`;
+        
+        // Exemplo de redirecionamento para o dashboard após login bem-sucedido
+        setTimeout(() => { window.location.href = '/dashboard'; }, 1500); 
+      } else {
+        // Trata erro 401 (Não autorizado) ou outros erros
+        const errorMessage = result.detail || result.mensagem || "Ocorreu um erro desconhecido.";
+        feedbackDiv.innerHTML = `<div class="alert alert-danger" role="alert"><strong>Erro:</strong> ${errorMessage}</div>`;
+      }
+
+    } catch (error) {
+      console.error('Erro na comunicação com a API:', error);
+      feedbackDiv.innerHTML = `<div class="alert alert-danger" role="alert">Erro de conexão: Não foi possível alcançar o servidor.</div>`;
+    }
+  });
+</script>
+{% endblock %}

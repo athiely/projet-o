@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import datetime
 
-# Usuário 
+# --- USUÁRIO ---
 class Usuario(SQLModel, table=True):
     __tablename__ = "usuarios"
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -12,7 +12,7 @@ class Usuario(SQLModel, table=True):
     senha: str 
     tipo: str = Field(default="Aluno") 
 
-# Sala 
+# --- SALA (Substituiu CHAVE) ---
 class Sala(SQLModel, table=True):
     __tablename__ = "salas"
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -20,7 +20,7 @@ class Sala(SQLModel, table=True):
     capacidade: int 
     recursos: str 
 
-# Reserva 
+# --- RESERVA ---
 class Reserva(SQLModel, table=True):
     __tablename__ = "reservas"
     
@@ -33,8 +33,8 @@ class Reserva(SQLModel, table=True):
     periodicidade: Optional[str] = Field(default=None) 
 
 
-# Notificação 
-class Notificacao(SQLModel, table=True):
+# --- NOTIFICAÇÃO ---
+class Notificacao(SQLModel, table=True): 
     __tablename__ = "notificacoes"
     id: Optional[int] = Field(default=None, primary_key=True)
     usuario_id: int = Field(foreign_key="usuarios.id")
@@ -43,13 +43,11 @@ class Notificacao(SQLModel, table=True):
     data_envio: datetime = Field(default_factory=datetime.utcnow)
     lida: bool = Field(default=False)
 
-# Log Auditoria
-class LogAuditoria(SQLModel, table=True):  
+# --- LOG AUDITORIA ---
+class LogAuditoria(SQLModel, table=True): 
     __tablename__ = "logs_auditoria"
     id: Optional[int] = Field(default=None, primary_key=True)
     usuario_id: Optional[int] = Field(default=None, foreign_key="usuarios.id")
     acao: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     detalhes: Optional[str] = Field(default=None)
-
-
