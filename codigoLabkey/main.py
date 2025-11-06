@@ -70,7 +70,10 @@ def dashboard_page(request: Request):
     if "usuario_id" not in request.session:
         return RedirectResponse(url="/login", status_code=303)
     tipo = request.session.get("tipo_usuario")
-    return templates.TemplateResponse("dashboard.html", {"request": request, "tipo_usuario": tipo})
+    nome = request.session.get("nome")
+    return templates.TemplateResponse(
+        "dashboard.html", {"request": request, "tipo_usuario": tipo, "nome": nome}
+    )
 
 # ------------------------
 # ROTAS DE AUTENTICAÇÃO
