@@ -1,99 +1,109 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastro - LabKey</title>
-    <link rel="stylesheet" href="/static/css/style.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      crossorigin="anonymous"
-    />
-  </head>
+{% extends "authBase.html" %}
+{% block title %}Cadastro - LabKey{% endblock %}
 
-  <body>
-    <div class="auth-container">
-      <aside class="aside-auth">
-        <img src="/static/images/logo-labkey.png" alt="logo-labkey" />
-      </aside>
+{% block auth_content %}
+<div class="form-container">
+  <div class="auth-txt">
+    <h1>Cadastre-se</h1>
+    <p>Comece agora a realizar suas reservas</p>
+    <div id="feedback-message" class="mt-3"></div>
+  </div>
 
-      <main class="auth-main">
-        <div class="form-container">
-          <div class="auth-txt">
-            <h1>Cadastre-se</h1>
-            <p>Comece agora a realizar suas reservas</p>
-            <div id="feedback-message"></div>
-          </div>
-
-          <form id="cadastro-form" method="POST">
-            <div class="mb-3">
-              <label for="nome" class="form-label">Nome</label>
-              <input
-                type="text"
-                class="form-control"
-                id="nome"
-                name="nome"
-                required
-              />
-            </div>
-
-            <div class="mb-3">
-              <label for="email" class="form-label">Endereço de Email</label>
-              <input
-                type="email"
-                class="form-control"
-                id="email"
-                name="email"
-                required
-              />
-            </div>
-
-            <div class="row">
-              <div class="mb-3 col-md-6">
-                <label for="senha" class="form-label">Senha</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="senha"
-                  name="senha"
-                  required
-                />
-              </div>
-
-              <div class="mb-3 col-md-6">
-                <label for="tipo" class="form-label">Perfil de usuário</label>
-                <select class="form-select" id="tipo" name="tipo" required>
-                  <option value="" selected disabled>
-                    Selecione seu perfil
-                  </option>
-                  <option value="Aluno">Aluno</option>
-                  <option value="Professor">Professor</option>
-                  <option value="Funcionario">Funcionário</option>
-                  <option value="Administrador">Administrador</option>
-                </select>
-              </div>
-            </div>
-
-            <button type="submit" class="btn w-100">
-              Cadastrar
-            </button>
-
-            <p class="mt-3 text-center">
-              Já tem conta? <a href="/login">Faça Login</a>
-            </p>
-          </form>
-          </div>
-          <div class="return">
-            <a href="#">Voltar</a>
-          </div>
-        </div>
-      </main>
+  <form id="cadastro-form">
+    <div class="mb-3">
+      <label for="nome" class="form-label">Nome</label>
+      <input type="text" class="form-control" id="nome" name="nome" required />
     </div>
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
-      crossorigin="anonymous"
-    ></script>
-  </body>
-</html>
+    <div class="mb-3">
+      <label for="email" class="form-label">Endereço de Email</label>
+      <input type="email" class="form-control" id="email" name="email" required />
+    </div>
+
+    <div class="row">
+      <div class="mb-3 col-md-6">
+        <label for="senha" class="form-label">Senha</label>
+        <input type="password" class="form-control" id="senha" name="senha" required />
+      </div>
+
+      <div class="mb-3 col-md-6">
+        <label for="tipo" class="form-label">Perfil de usuário</label>
+        <select class="form-select" id="tipo" name="tipo" required>
+          <option value="" selected disabled>Selecione seu perfil</option>
+          <option value="Comum">Comum</option>
+          <option value="Administrador">Administrador</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" class="btn w-100" id="cadastro-btn">Cadastrar</button>
+
+    <p class="mt-3 text-center">
+      Já tem conta? <a href="/login">Faça Login</a>
+    </p>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const API_BASE = "/api/v1";
+
+function showFeedback(message, type = "success") {
+  const feedbackDiv = document.getElementById("feedback-message");
+  const alertClass = type === "success" ? "alert-success" : "alert-danger";
+
+  feedbackDiv.innerHTML = `
+      <div class="alert-custom ${alertClass}" role="alert">
+          ${message}
+      </div>
+  `;
+}
+
+async function handleCadastroSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const submitBtn = document.getElementById("cadastro-btn");
+
+  const data = {
+    nome: form.nome.value,
+    email: form.email.value,
+    senha: form.senha.value,
+    tipo: form.tipo.value
+  };
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Aguarde...";
+  document.getElementById("feedback-message").innerHTML = "";
+
+  try {
+    const response = await fetch(`${API_BASE}/cadastro`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      showFeedback(result.mensagem, "success");
+      setTimeout(() => {
+        window.location.href = result.redirect;
+      }, 1000);
+    } else {
+      showFeedback(result.detail || "Erro desconhecido ao cadastrar.", "danger");
+    }
+  } catch (error) {
+    console.error("Erro de Conexão:", error);
+    showFeedback("Não foi possível conectar ao servidor.", "danger");
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Cadastrar";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("cadastro-form").addEventListener("submit", handleCadastroSubmit);
+});
+</script>
+{% endblock %}

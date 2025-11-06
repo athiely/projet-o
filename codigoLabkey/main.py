@@ -1,196 +1,151 @@
-from typing import Annotated, Optional
+from typing import Annotated
 from sqlmodel import SQLModel, Session, create_engine, select
-from fastapi import FastAPI, Depends, HTTPException, Request, status, Response
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.requests import Request
+from starlette.responses import RedirectResponse, JSONResponse
+from starlette.middleware.sessions import SessionMiddleware
 from contextlib import asynccontextmanager
-from passlib.context import CryptContext 
-from models.models import Usuario, CadastroInput, LoginInput
-from datetime import datetime, timedelta
-import os
-import uuid
+import hashlib
 
-# --- CONFIGURAÇÃO DE SEGURANÇA (RNF002) ---
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-# Secret Key para o cookie de sessão (DEVE SER ALTERADA EM AMBIENTE DE PRODUÇÃO!)
-SECRET_KEY = os.environ.get("SESSION_SECRET", str(uuid.uuid4()))
+from models.models import TipoUsuario, Usuario, CadastroInput, LoginInput
 
-def verify_password(plain_password: str, hashed_password: str):
-    """Verifica se a senha em texto simples corresponde ao hash."""
-    return pwd_context.verify(plain_password, hashed_password)
+# ------------------------
+# CONFIGURAÇÕES DO BANCO
+# ------------------------
+url = "sqlite:///labkey.db"
+args = {"check_same_thread": False}
+engine = create_engine(url, connect_args=args)
 
-def get_password_hash(password: str):
-    """Cria um hash seguro para a senha. (RF001/NF002)"""
-    # 1. Validação de tipo
-    if not isinstance(password, str):
-        print(f"ERRO DE TIPO: Senha fornecida não é uma string, é {type(password)}")
-        raise ValueError("A senha fornecida não é uma string válida. Verifique o payload do formulário.")
-    
-    # 2. Truncagem defensiva (re-introduzida)
-    # Garante que a string nunca exceda o limite de 72 bytes do bcrypt,
-    # prevenindo o ValueError, mesmo que a biblioteca esteja instável.
-    safe_password = password[:72]
-    
-    # 3. Log de depuração para entender o tamanho real
-    if len(password) > 72:
-        # Este print aparecerá no terminal, indicando que a string original era gigante.
-        print(f"AVISO: Senha muito longa ({len(password)} bytes). Foi truncada para 72 bytes antes do hash.")
-    else:
-        # Este print deve aparecer para sua senha de 5 dígitos.
-        print(f"DEBUG: Senha com {len(password)} caracteres ({len(password.encode('utf-8'))} bytes) sendo processada.")
-        
-    return pwd_context.hash(safe_password) # Usa a senha segura (truncada se necessário)
-
-# --- CONFIGURAÇÃO DO BANCO DE DADOS (SQLModel/SQLite) ---
-
-DB_URL = "sqlite:///labkey.db"
-DB_ARGS = {"check_same_thread": False}
-engine = create_engine(DB_URL, connect_args=DB_ARGS)
-
-def create_db_and_tables():
-    """Cria o banco de dados e todas as tabelas definidas nos modelos."""
-    SQLModel.metadata.create_all(engine)
-
-# Dependência para gerenciamento da sessão
 def get_session():
     with Session(engine) as session:
         yield session
+
 SessionDep = Annotated[Session, Depends(get_session)]
 
-# --- AUTENTICAÇÃO E SESSÃO ---
-
-def get_current_user_id(request: Request) -> Optional[int]:
-    """Tenta obter o ID do usuário a partir do cookie de sessão."""
-    try:
-        user_id_str = request.cookies.get("session_id")
-        if user_id_str:
-            return int(user_id_str)
-    except ValueError:
-        pass
-    return None
-
-def get_current_user(session: SessionDep, request: Request) -> Optional[Usuario]:
-    """Retorna o objeto Usuario se estiver autenticado, ou None."""
-    user_id = get_current_user_id(request)
-    if user_id is None:
-        return None
-        
-    consulta = select(Usuario).where(Usuario.id == user_id)
-    usuario = session.exec(consulta).first()
-    return usuario
-    
-CurrentUser = Annotated[Optional[Usuario], Depends(get_current_user)]
-
-
-# --- CONFIGURAÇÃO DO FASTAPI (App, Lifespan, Templates) ---
+def create_db():
+    SQLModel.metadata.create_all(engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Context manager que garante a criação das tabelas ao iniciar o app."""
-    print("Criando tabelas...")
-    create_db_and_tables()
+    create_db()
     yield
 
-app = FastAPI(title="LabKey MVP API", lifespan=lifespan)
+# ------------------------
+# CONFIGURAÇÃO DO APP
+# ------------------------
+app = FastAPI(lifespan=lifespan)
+app.add_middleware(SessionMiddleware, secret_key="chave_muito_segura_labkey")
 
-# Configuração para servir arquivos estáticos (CSS, JS)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Configuração do motor de templates Jinja2
 templates = Jinja2Templates(directory="templates")
 
-# --- ROTAS DE VIEW (PÁGINAS HTML) ---
+# ------------------------
+# ROTAS DE PÁGINAS (FRONT)
+# ------------------------
+@app.get("/", summary="Página Inicial")
+def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/")
-def pagina_home(request: Request, user: CurrentUser):
-    """Renderiza a página inicial."""
-    context = {"request": request, "user": user}
-    return templates.TemplateResponse("index.html", context)
+@app.get("/login", summary="Página de Login")
+def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
-@app.get("/cadastro")
-def pagina_cadastro(request: Request, user: CurrentUser):
-    """Renderiza a página HTML de Cadastro."""
-    if user:
-        # Se o usuário já está logado, redireciona para a home
-        return Response(status_code=status.HTTP_302_FOUND, headers={"Location": "/"})
-    return templates.TemplateResponse("cadastro.html", {"request": request, "user": user})
+@app.get("/cadastro", summary="Página de Cadastro")
+def cadastro_page(request: Request):
+    return templates.TemplateResponse("cadastro.html", {"request": request})
 
-@app.get("/login")
-def pagina_login(request: Request, user: CurrentUser):
-    """Renderiza a página HTML de Login."""
-    if user:
-        # Se o usuário já está logado, redireciona para a home
-        return Response(status_code=status.HTTP_302_FOUND, headers={"Location": "/"})
-    return templates.TemplateResponse("login.html", {"request": request, "user": user})
+@app.get("/dashboard", summary="Página do Dashboard")
+def dashboard_page(request: Request):
+    if "usuario_id" not in request.session:
+        return RedirectResponse(url="/login", status_code=303)
+    tipo = request.session.get("tipo_usuario")
+    return templates.TemplateResponse("dashboard.html", {"request": request, "tipo_usuario": tipo})
 
-@app.post("/logout")
-def logout(response: Response):
-    """RF003: Efetua o Logout (remove o cookie de sessão)."""
-    response.delete_cookie(key="session_id")
-    # Redireciona o usuário para a página de login
-    response.headers["Location"] = "/login"
-    return Response(status_code=status.HTTP_302_FOUND)
-
-
-# --- ROTAS DE API (Endpoints JSON) ---
-
-@app.post("/cadastro", status_code=status.HTTP_201_CREATED)
-def cadastrar_usuario(session: SessionDep, dados_cadastro: CadastroInput):
-    """RF001: Recebe dados, faz o hash da senha e cria o usuário."""
-    
-    # 1. Verifica se o e-mail já existe
-    consulta = select(Usuario).where(Usuario.email == dados_cadastro.email)
-    existente = session.exec(consulta).first()
+# ------------------------
+# ROTAS DE AUTENTICAÇÃO
+# ------------------------
+@app.post("/api/v1/cadastro")
+def cadastrar_usuario(session: SessionDep, dados: CadastroInput, request: Request):
+    # Verifica se o e-mail já existe
+    existente = session.exec(select(Usuario).where(Usuario.email == dados.email)).first()
     if existente:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
-            detail="E-mail já cadastrado."
-        )
+        raise HTTPException(status_code=400, detail="E-mail já cadastrado.")
 
-    # 2. Gera o hash da senha (DEIXANDO O ERRO VAZAR TEMPORARIAMENTE PARA DIAGNÓSTICO)
-    hashed_password = get_password_hash(dados_cadastro.senha)
-    # Se um erro ocorrer acima, o traceback completo será impresso no terminal.
+    # Valida tipo de usuário usando Enum
+    try:
+        tipo_usuario = TipoUsuario(dados.tipo)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Tipo de usuário inválido.")
 
-    # 3. Cria a instância de Usuario com o hash
-    novo_usuario = Usuario(
-        nome=dados_cadastro.nome,
-        email=dados_cadastro.email,
-        tipo=dados_cadastro.tipo,
-        senha_hash=hashed_password # SALVA O HASH SEGURO
+    # Cria hash da senha
+    senha_hash = hashlib.sha256(dados.senha.encode()).hexdigest()
+    usuario = Usuario(
+        nome=dados.nome,
+        email=dados.email,
+        tipo=tipo_usuario,
+        senha_hash=senha_hash
     )
-
-    session.add(novo_usuario)
+    session.add(usuario)
     session.commit()
-    session.refresh(novo_usuario)
-    
-    return {"mensagem": "Usuário cadastrado com sucesso!", "id": novo_usuario.id}
+    session.refresh(usuario)
 
-@app.post("/login")
-def login(dados_login: LoginInput, session: SessionDep, response: Response):
-    # ... (lógica de login permanece a mesma) ...
-    
-    consulta = select(Usuario).where(Usuario.email == dados_login.email)
-    usuario = session.exec(consulta).first()
+    # Cria a sessão do usuário automaticamente
+    request.session["usuario_id"] = usuario.id
+    request.session["nome"] = usuario.nome
+    request.session["tipo_usuario"] = usuario.tipo.value
 
-    # 1. Usuário não encontrado
+    # Redireciona para o dashboard
+    return JSONResponse({"mensagem": f"Cadastro realizado com sucesso, {usuario.nome}!", "redirect": "/dashboard"})
+
+@app.post("/api/v1/login")
+def login(dados: LoginInput, session: SessionDep, request: Request):
+    usuario = session.exec(select(Usuario).where(Usuario.email == dados.email)).first()
     if not usuario:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="E-mail ou senha incorretos.")
+        raise HTTPException(status_code=401, detail="E-mail não encontrado.")
 
-    # 2. Verifica a senha usando o hash
-    if not verify_password(dados_login.senha, usuario.senha_hash):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="E-mail ou senha incorretos.")
+    senha_hash = hashlib.sha256(dados.senha.encode()).hexdigest()
+    if usuario.senha_hash != senha_hash:
+        raise HTTPException(status_code=401, detail="Senha incorreta.")
 
-    # 3. SUCESSO: Cria o cookie de sessão (RF002 implementado)
-    expires_time = datetime.now() + timedelta(days=1)
-    
-    response.set_cookie(
-        key="session_id", 
-        value=str(usuario.id), 
-        expires=expires_time.timestamp(),
-        httponly=True,
-        samesite="lax",
-        secure=False,
-    )
+    # Armazena sessão
+    request.session["usuario_id"] = usuario.id
+    request.session["nome"] = usuario.nome
+    request.session["tipo_usuario"] = usuario.tipo.value
 
-    # Sucesso - Retorna uma mensagem e o cookie é setado no cabeçalho da resposta
-    return {"mensagem": f"Login bem-sucedido! Bem-vindo(a), {usuario.nome}.", "redirect_url": "/"}
+    return {"mensagem": f"Login bem-sucedido! Bem-vindo(a), {usuario.nome}.", "tipo": usuario.tipo.value}
+
+@app.post("/api/v1/logout")
+def logout(request: Request):
+    request.session.clear()
+    return {"mensagem": "Logout realizado com sucesso."}
+
+# ------------------------
+# ROTAS PROTEGIDAS
+# ------------------------
+@app.get("/api/v1/usuario")
+def get_usuario_atual(request: Request):
+    if "usuario_id" not in request.session:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado.")
+    return {
+        "id": request.session.get("usuario_id"),
+        "nome": request.session.get("nome"),
+        "tipo": request.session.get("tipo_usuario"),
+    }
+
+@app.get("/api/v1/admin-only")
+def admin_only(request: Request):
+    tipo = request.session.get("tipo_usuario")
+    if tipo != "ADMINISTRADOR":
+        raise HTTPException(status_code=403, detail="Acesso negado. Área restrita a administradores.")
+    return {"mensagem": "Acesso autorizado. Você é um administrador."}
