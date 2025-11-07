@@ -75,6 +75,14 @@ def dashboard_page(request: Request):
         "dashboard.html", {"request": request, "tipo_usuario": tipo, "nome": nome}
     )
 
+@app.get("/cadastro_sala", summary="Página de Cadastro de Sala")
+def cadastro_sala_page(request: Request):
+    return templates.TemplateResponse("salas.html", {"request": request})
+
+@app.get("/reserva", summary="Página de Reserva de Sala")
+def cadastro_sala_page(request: Request):
+    return templates.TemplateResponse("reservas.html", {"request": request})
+
 # ------------------------
 # ROTAS DE AUTENTICAÇÃO
 # ------------------------
