@@ -16,7 +16,7 @@ class TipoUsuario(str, enum.Enum):
 class StatusReserva(str, enum.Enum):
     """Define os status possíveis da reserva."""
     PENDENTE = "Pendente"
-    APROVADA = "Aprovada"     # mais natural que “Confirmada”
+    APROVADA = "Aprovada"
     CANCELADA = "Cancelada"
 
 
@@ -26,9 +26,9 @@ class StatusReserva(str, enum.Enum):
 
 class UsuarioBase(SQLModel):
     """Campos base para Usuário, excluindo IDs e hash."""
-    nome: str = Field(index=True, description="Nome completo do usuário")
-    email: str = Field(unique=True, description="E-mail único para login")
-    tipo: TipoUsuario = Field(default=TipoUsuario.COMUM, description="Tipo de usuário")
+    use_nome: str = Field(index=True, description="Nome completo do usuário")
+    use_email: str = Field(unique=True, description="E-mail único para login")
+    use_tipo: TipoUsuario = Field(default=TipoUsuario.COMUM, description="Tipo de usuário")
 
 
 class CadastroInput(SQLModel):
@@ -47,19 +47,19 @@ class LoginInput(SQLModel):
 
 class SalaBase(SQLModel):
     """Campos base para o modelo de Sala."""
-    nome: str = Field(unique=True, index=True, description="Nome identificador da sala")
-    descricao: Optional[str] = Field(default=None, description="Descrição da sala")
-    capacidade: int = Field(description="Capacidade máxima de pessoas")
-    localizacao: Optional[str] = Field(default=None, description="Localização física da sala")
-    recursos: Optional[str] = Field(default=None, description="Equipamentos ou recursos disponíveis")
+    sal_nome: str = Field(unique=True, index=True, description="Nome identificador da sala")
+    sal_descricao: Optional[str] = Field(default=None, description="Descrição da sala")
+    sal_capacidade: int = Field(description="Capacidade máxima de pessoas")
+    sal_localizacao: Optional[str] = Field(default=None, description="Localização física da sala")
+    sal_recursos: Optional[str] = Field(default=None, description="Equipamentos ou recursos disponíveis")
 
 
 class ReservaBase(SQLModel):
     """Campos base para o modelo de Reserva."""
-    data: date = Field(description="Data da reserva")
-    hora_inicio: time = Field(description="Hora de início")
-    hora_fim: time = Field(description="Hora de término")
-    status: StatusReserva = Field(default=StatusReserva.PENDENTE, description="Status atual da reserva")
+    res_data: date = Field(description="Data da reserva")
+    res_hora_inicio: time = Field(description="Hora de início")
+    res_hora_fim: time = Field(description="Hora de término")
+    res_status: StatusReserva = Field(default=StatusReserva.PENDENTE, description="Status atual da reserva")
 
 
 # ======================================================
@@ -68,8 +68,8 @@ class ReservaBase(SQLModel):
 
 class Usuario(UsuarioBase, table=True):
     """Tabela de Usuários."""
-    id: Optional[int] = Field(default=None, primary_key=True)
-    senha_hash: str = Field(description="Hash da senha do usuário (não armazenar texto puro)")
+    use_id: Optional[int] = Field(default=None, primary_key=True)
+    use_senha_hash: str = Field(description="Hash da senha do usuário (não armazenar texto puro)")
 
     # Relação: Um usuário pode ter várias reservas
     reservas: List["Reserva"] = Relationship(back_populates="usuario")
@@ -77,7 +77,7 @@ class Usuario(UsuarioBase, table=True):
 
 class Sala(SalaBase, table=True):
     """Tabela de Salas."""
-    id: Optional[int] = Field(default=None, primary_key=True)
+    sal_id: Optional[int] = Field(default=None, primary_key=True)
 
     # Relação: Uma sala pode ter várias reservas
     reservas: List["Reserva"] = Relationship(back_populates="sala")
@@ -85,10 +85,10 @@ class Sala(SalaBase, table=True):
 
 class Reserva(ReservaBase, table=True):
     """Tabela de Reservas."""
-    id: Optional[int] = Field(default=None, primary_key=True)
+    res_id: Optional[int] = Field(default=None, primary_key=True)
 
-    usuario_id: int = Field(foreign_key="usuario.id")
-    sala_id: int = Field(foreign_key="sala.id")
+    res_usuario_id: int = Field(foreign_key="usuario.use_id")
+    res_sala_id: int = Field(foreign_key="sala.sal_id")
 
     # Relações bidirecionais
     usuario: Optional[Usuario] = Relationship(back_populates="reservas")
@@ -98,22 +98,22 @@ class Reserva(ReservaBase, table=True):
 
 class SalaUpdate(SQLModel):
     """Modelo para atualizar informações da sala."""
-    nome: Optional[str] = None
-    capacidade: Optional[int] = None
-    recursos: Optional[str] = None
+    sal_nome: Optional[str] = None
+    sal_capacidade: Optional[int] = None
+    sal_recursos: Optional[str] = None
 
 
 class ReservaInput(SQLModel):
     """Modelo para criar uma nova reserva."""
-    data: date
-    hora_inicio: time
-    hora_fim: time
-    sala_id: int
+    res_data: date
+    res_hora_inicio: time
+    res_hora_fim: time
+    res_sala_id: int
 
 
 class ReservaUpdate(SQLModel):
     """Modelo para atualizar uma reserva existente."""
-    data: Optional[date] = None
-    hora_inicio: Optional[time] = None
-    hora_fim: Optional[time] = None
-    status: Optional[StatusReserva] = None
+    res_data: Optional[date] = None
+    res_hora_inicio: Optional[time] = None
+    res_hora_fim: Optional[time] = None
+    res_status: Optional[StatusReserva] = None
