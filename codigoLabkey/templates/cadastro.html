@@ -30,8 +30,8 @@
         <label for="tipo" class="form-label">Perfil de usuário</label>
         <select class="form-select" id="tipo" name="tipo" required>
           <option value="" selected disabled>Selecione seu perfil</option>
-          <option value="Comum">Comum</option>
-          <option value="Administrador">Administrador</option>
+          <option value="COMUM">Comum</option>
+          <option value="ADMINISTRADOR">Administrador</option>
         </select>
       </div>
     </div>
@@ -52,18 +52,13 @@ const API_BASE = "/api/v1";
 function showFeedback(message, type = "success") {
   const feedbackDiv = document.getElementById("feedback-message");
   const alertClass = type === "success" ? "alert-success" : "alert-danger";
-
-  feedbackDiv.innerHTML = `
-      <div class="alert-custom ${alertClass}" role="alert">
-          ${message}
-      </div>
-  `;
+  feedbackDiv.innerHTML = `<div class="alert-custom ${alertClass}" role="alert">${message}</div>`;
 }
 
 async function handleCadastroSubmit(e) {
   e.preventDefault();
   const form = e.target;
-  const submitBtn = document.getElementById("cadastro-btn");
+  const btn = document.getElementById("cadastro-btn");
 
   const data = {
     nome: form.nome.value,
@@ -72,33 +67,28 @@ async function handleCadastroSubmit(e) {
     tipo: form.tipo.value
   };
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Aguarde...";
-  document.getElementById("feedback-message").innerHTML = "";
+  btn.disabled = true;
+  btn.textContent = "Aguarde...";
 
   try {
     const response = await fetch(`${API_BASE}/cadastro`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     });
 
     const result = await response.json();
-
     if (response.ok) {
       showFeedback(result.mensagem, "success");
-      setTimeout(() => {
-        window.location.href = result.redirect;
-      }, 1000);
+      setTimeout(() => window.location.href = result.redirect, 1000);
     } else {
-      showFeedback(result.detail || "Erro desconhecido ao cadastrar.", "danger");
+      showFeedback(result.detail || "Erro ao cadastrar.", "danger");
     }
-  } catch (error) {
-    console.error("Erro de Conexão:", error);
-    showFeedback("Não foi possível conectar ao servidor.", "danger");
+  } catch {
+    showFeedback("Falha ao conectar com o servidor.", "danger");
   } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Cadastrar";
+    btn.disabled = false;
+    btn.textContent = "Cadastrar";
   }
 }
 

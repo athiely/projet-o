@@ -1,52 +1,70 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LabKey - Sistema de Reservas</title>
-    <link 
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-..."
-        crossorigin="anonymous"
-    />
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-..."
-        crossorigin="anonymous"
-    ></script>
-    <link rel="stylesheet" href="/static/css/style.css" />
-</head>
-<body>
-    
-   <div class="dsbd-container">
-        <nav class="dsbd-nav">
-            <!-- <div class="nav-img">
-                <img src="/static/images/logo-labkey.png" alt="logo_labkey">
-            </div> -->
-            <ul class="nav justify-contente-end">
-                <li class="nav-item">
-                    <a href="nav-link">Salas</a>
-                </li>
-                <li>
-                    <a href="nav-link">Minhas reservas</a>
-                </li>
-                <li class="nav-item">
-                    <i class="fa-regular fa-right-from-bracket"></i>
-                    <!-- aqui vai ter um botão para deslogar o usuario -->
-                </li>
-            </ul>
-        </nav>
-        <main class="dsbd-main">
-          <div class="sala-card">
-            <h1>M1</h1>
-            <p>Laboratorio de Informatica</p>
-          </div>
-        </main>
-        <footer class=dsbd-footer>
+{% extends "base_dashboard.html" %}
 
-        </footer>
-   </div>
-    
-</body>
-</html>
+{% block content %}
+<div class="salas-container">
+
+    <!-- Filtros -->
+    <div class="filter-bar d-flex justify-content-center align-items-center mt-3">
+        <button class="btn btn-light me-2">FILTRAR POR</button>
+        <button class="btn btn-success">
+            <i class="bi bi-filter"></i>
+        </button>
+    </div>
+
+    <!-- Botão Nova Sala (apenas admin) -->
+    {% if tipo_usuario == "ADMINISTRADOR" %}
+    <div class="text-end mt-4 me-4">
+        <button class="btn btn-dark rounded-pill px-4" id="novaSalaBtn">
+            Nova sala
+        </button>
+    </div>
+    {% endif %}
+
+    <!-- Lista de salas -->
+    <div class="salas-grid d-flex flex-wrap justify-content-center mt-4 gap-3">
+        {% for sala in salas %}
+        <div class="sala-card" data-id="{{ sala.id }}">
+            {{ sala.nome }}
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- Modal Detalhes da Sala -->
+<div class="modal fade" id="salaModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <h4 id="salaModalNome"></h4>
+      <p><strong>Capacidade:</strong> <span id="salaModalCapacidade"></span></p>
+      <p><strong>Equipamentos:</strong> <span id="salaModalEquip"></span></p>
+      <button class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nova Sala -->
+<div class="modal fade" id="novaSalaModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <h4>Cadastrar nova sala</h4>
+      <form id="formNovaSala">
+        <div class="mb-3">
+          <label>Nome da sala</label>
+          <input type="text" class="form-control" name="nome" required>
+        </div>
+        <div class="mb-3">
+          <label>Capacidade</label>
+          <input type="number" class="form-control" name="capacidade" required>
+        </div>
+        <div class="mb-3">
+          <label>Equipamentos</label>
+          <input type="text" class="form-control" name="equipamentos">
+        </div>
+        <button type="submit" class="btn btn-success">Salvar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -9,8 +9,8 @@ import enum
 
 class TipoUsuario(str, enum.Enum):
     """Define os tipos de usuários (RF015)."""
-    COMUM = "Comum"
-    ADMINISTRADOR = "Administrador"
+    COMUM = "COMUM"
+    ADMINISTRADOR = "ADMINISTRADOR"
 
 
 class StatusReserva(str, enum.Enum):

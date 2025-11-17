@@ -12,9 +12,9 @@ import hashlib
 
 from models.models import TipoUsuario, Usuario, CadastroInput, LoginInput
 
-# ------------------------
-# CONFIGURAÇÕES DO BANCO
-# ------------------------
+# ======================================================
+# CONFIGURAÇÃO DO BANCO
+# ======================================================
 url = "sqlite:///labkey.db"
 args = {"check_same_thread": False}
 engine = create_engine(url, connect_args=args)
@@ -33,9 +33,9 @@ async def lifespan(app: FastAPI):
     create_db()
     yield
 
-# ------------------------
+# ======================================================
 # CONFIGURAÇÃO DO APP
-# ------------------------
+# ======================================================
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key="chave_muito_segura_labkey")
 
@@ -50,9 +50,9 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# ------------------------
-# ROTAS DE PÁGINAS (FRONT)
-# ------------------------
+# ======================================================
+# ROTAS DE PÁGINAS
+# ======================================================
 @app.get("/", summary="Página Inicial")
 def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
@@ -75,23 +75,23 @@ def dashboard_page(request: Request):
         "dashboard.html", {"request": request, "tipo_usuario": tipo, "nome": nome}
     )
 
-# ------------------------
+# ======================================================
 # ROTAS DE AUTENTICAÇÃO
-# ------------------------
+# ======================================================
 @app.post("/api/v1/cadastro")
 def cadastrar_usuario(session: SessionDep, dados: CadastroInput, request: Request):
-    # Verifica se o e-mail já existe
     existente = session.exec(select(Usuario).where(Usuario.email == dados.email)).first()
     if existente:
         raise HTTPException(status_code=400, detail="E-mail já cadastrado.")
 
-    # Valida tipo de usuário usando Enum
+    # 🔧 Ajuste: aceita 'comum' ou 'Comum', 'administrador' ou 'Administrador'
+    
+    # 🔧 Ajuste: aceita 'comum' ou 'Comum', 'administrador' ou 'Administrador'
     try:
-        tipo_usuario = TipoUsuario(dados.tipo)
+        tipo_usuario = TipoUsuario(dados.tipo.upper())
     except ValueError:
         raise HTTPException(status_code=400, detail="Tipo de usuário inválido.")
 
-    # Cria hash da senha
     senha_hash = hashlib.sha256(dados.senha.encode()).hexdigest()
     usuario = Usuario(
         nome=dados.nome,
@@ -103,13 +103,15 @@ def cadastrar_usuario(session: SessionDep, dados: CadastroInput, request: Reques
     session.commit()
     session.refresh(usuario)
 
-    # Cria a sessão do usuário automaticamente
+    # Cria sessão
     request.session["usuario_id"] = usuario.id
     request.session["nome"] = usuario.nome
     request.session["tipo_usuario"] = usuario.tipo.value
 
-    # Redireciona para o dashboard
-    return JSONResponse({"mensagem": f"Cadastro realizado com sucesso, {usuario.nome}!", "redirect": "/dashboard"})
+    return JSONResponse({
+        "mensagem": f"Cadastro realizado com sucesso, {usuario.nome}!",
+        "redirect": "/dashboard"
+    })
 
 @app.post("/api/v1/login")
 def login(dados: LoginInput, session: SessionDep, request: Request):
@@ -121,34 +123,36 @@ def login(dados: LoginInput, session: SessionDep, request: Request):
     if usuario.senha_hash != senha_hash:
         raise HTTPException(status_code=401, detail="Senha incorreta.")
 
-    # Armazena sessão
+    # Sessão
     request.session["usuario_id"] = usuario.id
     request.session["nome"] = usuario.nome
     request.session["tipo_usuario"] = usuario.tipo.value
 
-    return {"mensagem": f"Login bem-sucedido! Bem-vindo(a), {usuario.nome}.", "tipo": usuario.tipo.value}
+    return {"mensagem": f"Login bem-sucedido! Bem-vindo(a), {usuario.nome}."}
 
-@app.post("/api/v1/logout")
+# ======================================================
+# LOGOUT
+# ======================================================
+@app.get("/logout", summary="Encerrar sessão do usuário")
 def logout(request: Request):
     request.session.clear()
-    return {"mensagem": "Logout realizado com sucesso."}
+    return RedirectResponse(url="/", status_code=303)
 
-# ------------------------
-# ROTAS PROTEGIDAS
-# ------------------------
-@app.get("/api/v1/usuario")
-def get_usuario_atual(request: Request):
+# ======================================================
+# OUTRAS PÁGINAS
+# ======================================================
+@app.get("/salas", summary="Página de Salas")
+def salas_page(request: Request):
     if "usuario_id" not in request.session:
-        raise HTTPException(status_code=401, detail="Usuário não autenticado.")
-    return {
-        "id": request.session.get("usuario_id"),
-        "nome": request.session.get("nome"),
-        "tipo": request.session.get("tipo_usuario"),
-    }
-
-@app.get("/api/v1/admin-only")
-def admin_only(request: Request):
+        return RedirectResponse(url="/login", status_code=303)
+    nome = request.session.get("nome")
     tipo = request.session.get("tipo_usuario")
-    if tipo != "ADMINISTRADOR":
-        raise HTTPException(status_code=403, detail="Acesso negado. Área restrita a administradores.")
-    return {"mensagem": "Acesso autorizado. Você é um administrador."}
+    return templates.TemplateResponse("salas.html", {"request": request, "nome": nome, "tipo_usuario": tipo})
+
+@app.get("/reservas", summary="Página de Reservas")
+def reservas_page(request: Request):
+    if "usuario_id" not in request.session:
+        return RedirectResponse(url="/login", status_code=303)
+    nome = request.session.get("nome")
+    tipo = request.session.get("tipo_usuario")
+    return templates.TemplateResponse("reservas.html", {"request": request, "nome": nome, "tipo_usuario": tipo})
