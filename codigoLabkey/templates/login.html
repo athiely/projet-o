@@ -7,7 +7,6 @@
     <div class="auth-txt">
         <h1>Login</h1>
         <p>Entre para acessar suas reservas</p>
-        <!-- Div para exibir mensagens de sucesso ou erro -->
         <div id="feedback-message" class="mt-3"></div> 
     </div>
 
@@ -49,8 +48,6 @@
 {% block scripts %}
 <script>
     const API_BASE = "/api/v1";
-
-    /** Exibe mensagens de feedback (Sucesso ou Erro) */
     function showFeedback(message, type = 'success') {
         const feedbackDiv = document.getElementById('feedback-message');
         const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
@@ -85,17 +82,13 @@
                 body: JSON.stringify(data) 
             });
             
-            const result = await response.json(); // Tenta ler o JSON do backend
-
+            const result = await response.json();
             if (response.ok) {
-                // Sucesso: Backend deve retornar uma mensagem ou token
                 showFeedback(result.mensagem || `Login efetuado com sucesso! Redirecionando...`, 'success');
                 setTimeout(() => { 
-                    // Em uma aplicação real, você usaria o token retornado para autenticar o usuário 
                     window.location.href = '/dashboard'; 
                 }, 1000); 
             } else {
-                // Falha: Exibe a mensagem de erro do backend (ex: credenciais inválidas)
                 showFeedback(result.detail || result.mensagem || "Credenciais inválidas. Tente novamente.", 'danger');
             }
         } catch (error) {

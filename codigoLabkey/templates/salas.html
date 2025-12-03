@@ -1,70 +1,458 @@
-{% extends "base_dashboard.html" %}
+{% extends "base_dashboard.html" %} {% block content %}
+<div class="container my-5">
+  <h2 class="text-center mb-4 text-dark fw-bold">Gerenciamento de Salas</h2>
 
-{% block content %}
-<div class="salas-container">
-
-    <!-- Filtros -->
-    <div class="filter-bar d-flex justify-content-center align-items-center mt-3">
-        <button class="btn btn-light me-2">FILTRAR POR</button>
-        <button class="btn btn-success">
-            <i class="bi bi-filter"></i>
-        </button>
+  <div class="d-flex justify-content-between align-items-center mb-4 mx-3">
+    <div class="filter-bar d-flex align-items-center">
+      <button class="btn btn-outline-secondary me-2">
+        <i class="cil-funnel"></i> Filtrar Salas
+      </button>
     </div>
 
-    <!-- Botão Nova Sala (apenas admin) -->
     {% if tipo_usuario == "ADMINISTRADOR" %}
-    <div class="text-end mt-4 me-4">
-        <button class="btn btn-dark rounded-pill px-4" id="novaSalaBtn">
-            Nova sala
-        </button>
-    </div>
+    <button
+      class="btn btn-dark"
+      id="novaSalaBtn"
+      data-coreui-toggle="modal"
+      data-coreui-target="#novaSalaModal"
+    >
+      Nova Sala
+    </button>
     {% endif %}
+  </div>
 
-    <!-- Lista de salas -->
-    <div class="salas-grid d-flex flex-wrap justify-content-center mt-4 gap-3">
-        {% for sala in salas %}
-        <div class="sala-card" data-id="{{ sala.id }}">
-            {{ sala.nome }}
-        </div>
-        {% endfor %}
+  <div
+    id="feedback-message"
+    class="alert alert-dismissible fade d-none"
+    role="alert"
+  >
+    <span id="feedback-text"></span>
+    <button
+      type="button"
+      class="btn-close"
+      onclick="document.getElementById('feedback-message').classList.add('d-none')"
+    ></button>
+  </div>
+
+  <div class="salas-grid d-flex flex-wrap justify-content-center mt-4 gap-4">
+    {% for sala in salas %}
+    <div
+      class="card sala-card shadow-sm border-dark-subtle"
+      data-id="{{ sala.id }}"
+      style="width: 18rem; cursor: pointer"
+    >
+      <div class="card-body">
+        <h5 class="card-title fw-bold text-primary">{{ sala.nome }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          Capacidade: {{ sala.capacidade }}
+        </h6>
+        <p class="card-text text-truncate">
+          {{ sala.recursos | default('Nenhum recurso listado.') }}
+        </p>
+      </div>
+      <div class="card-footer bg-light-subtle text-end">
+        <small class="text-muted">Clique para detalhes</small>
+      </div>
     </div>
-
+    {% else %}
+    <div class="alert alert-info w-75 text-center" role="alert">
+      Nenhuma sala cadastrada no momento. {% if tipo_usuario == "ADMINISTRADOR"
+      %} Clique em "Nova Sala" para adicionar uma. {% endif %}
+    </div>
+    {% endfor %}
+  </div>
 </div>
 
-<!-- Modal Detalhes da Sala -->
-<div class="modal fade" id="salaModal" tabindex="-1" aria-hidden="true">
+<div
+  class="modal fade"
+  id="salaModal"
+  data-coreui-backdrop="static"
+  data-coreui-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="salaModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog">
-    <div class="modal-content p-3">
-      <h4 id="salaModalNome"></h4>
-      <p><strong>Capacidade:</strong> <span id="salaModalCapacidade"></span></p>
-      <p><strong>Equipamentos:</strong> <span id="salaModalEquip"></span></p>
-      <button class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="salaModalNome">Detalhes da Sala</h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-coreui-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2"><strong>ID:</strong> <span id="salaModalId"></span></p>
+        <p class="mb-2">
+          <strong>Capacidade:</strong>
+          <span id="salaModalCapacidade"></span> pessoas
+        </p>
+        <p class="mb-2">
+          <strong>Recursos:</strong> <span id="salaModalRecursos"></span>
+        </p>
+        <hr />
+        <div class="text-center">
+          <a href="/reservas" class="btn btn-success"
+            ><i class="cil-calendar me-1"></i> Fazer Reserva</a
+          >
+        </div>
+      </div>
+      <div
+        class="modal-footer d-flex justify-content-between"
+        id="salaModalFooter"
+      >
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-coreui-dismiss="modal"
+        >
+          Fechar
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Modal Nova Sala -->
-<div class="modal fade" id="novaSalaModal" tabindex="-1" aria-hidden="true">
+<div
+  class="modal fade"
+  id="novaSalaModal"
+  data-coreui-backdrop="static"
+  data-coreui-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="novaSalaModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog">
-    <div class="modal-content p-3">
-      <h4>Cadastrar nova sala</h4>
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="novaSalaModalLabel">Cadastrar Nova Sala</h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-coreui-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
       <form id="formNovaSala">
-        <div class="mb-3">
-          <label>Nome da sala</label>
-          <input type="text" class="form-control" name="nome" required>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nome da sala</label>
+            <input type="text" class="form-control" name="nome" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Capacidade (número de pessoas)</label>
+            <input
+              type="number"
+              class="form-control"
+              name="capacidade"
+              required
+              min="1"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label"
+              >Recursos/Equipamentos (ex: Projetor, 20 PCs)</label
+            >
+            <input type="text" class="form-control" name="recursos" />
+          </div>
         </div>
-        <div class="mb-3">
-          <label>Capacidade</label>
-          <input type="number" class="form-control" name="capacidade" required>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-coreui-dismiss="modal"
+          >
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-success">Salvar Sala</button>
         </div>
-        <div class="mb-3">
-          <label>Equipamentos</label>
-          <input type="text" class="form-control" name="equipamentos">
-        </div>
-        <button type="submit" class="btn btn-success">Salvar</button>
       </form>
     </div>
   </div>
 </div>
 
+<div
+  class="modal fade"
+  id="editarSalaModal"
+  data-coreui-backdrop="static"
+  data-coreui-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="editarSalaModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title" id="editarSalaModalLabel">
+          Editar Sala: <span id="editarSalaNome"></span>
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-coreui-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form id="formEditarSala" data-sala-id="">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nome da sala</label>
+            <input
+              type="text"
+              class="form-control"
+              name="nome"
+              id="editNome"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Capacidade</label>
+            <input
+              type="number"
+              class="form-control"
+              name="capacidade"
+              id="editCapacidade"
+              required
+              min="1"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Recursos/Equipamentos</label>
+            <input
+              type="text"
+              class="form-control"
+              name="recursos"
+              id="editRecursos"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-coreui-dismiss="modal"
+          >
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-warning">
+            Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %} --- {% block scripts %}
+<script>
+  // Mantemos esta linha, pois ela resolve o objeto Modal, priorizando CoreUI
+  const Modal = window.coreui?.Modal || window.bootstrap?.Modal;
+
+  const salaModal = Modal
+    ? new Modal(document.getElementById("salaModal"))
+    : null;
+  const novaSalaModal = Modal
+    ? new Modal(document.getElementById("novaSalaModal"))
+    : null;
+  const editarSalaModal = Modal
+    ? new Modal(document.getElementById("editarSalaModal"))
+    : null;
+
+  const IS_ADMIN = "{{ tipo_usuario }}" === "ADMINISTRADOR";
+
+  function showFeedback(message, type = "success") {
+    const feedbackDiv = document.getElementById("feedback-message");
+    const feedbackText = document.getElementById("feedback-text");
+
+    feedbackDiv.className = "alert alert-dismissible fade d-none mt-3 mx-3";
+    feedbackDiv.classList.add(`alert-${type}`);
+    feedbackText.textContent = message;
+
+    feedbackDiv.classList.remove("d-none");
+    feedbackDiv.classList.add("show");
+
+    setTimeout(() => {
+      feedbackDiv.classList.remove("show");
+      feedbackDiv.classList.add("d-none");
+    }, 5000);
+  }
+
+  document.querySelectorAll(".sala-card").forEach((card) => {
+    card.addEventListener("click", async () => {
+      const salaId = card.getAttribute("data-id");
+      if (!salaId || !salaModal) return;
+
+      try {
+        const response = await fetch(`/api/v1/salas/${salaId}`);
+        const sala = await response.json();
+
+        if (!response.ok) {
+          showFeedback(`Erro ao carregar detalhes: ${sala.detail}`, "danger");
+          return;
+        }
+
+        document.getElementById("salaModalNome").textContent = sala.nome;
+        document.getElementById("salaModalId").textContent = sala.id;
+        document.getElementById("salaModalCapacidade").textContent =
+          sala.capacidade;
+        document.getElementById("salaModalRecursos").textContent =
+          sala.recursos || "Nenhum";
+
+        const modalFooter = document.getElementById("salaModalFooter");
+
+        modalFooter
+          .querySelectorAll(".admin-action-btn")
+          .forEach((btn) => btn.remove());
+
+        if (IS_ADMIN) {
+          const editBtn = document.createElement("button");
+          editBtn.className = "btn btn-warning mt-0 admin-action-btn";
+          editBtn.textContent = "Editar";
+          editBtn.onclick = () => {
+            prepararEdicao(sala);
+            salaModal.hide();
+          };
+          modalFooter.insertBefore(editBtn, modalFooter.lastElementChild);
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "btn btn-danger mt-0 me-2 admin-action-btn";
+          deleteBtn.textContent = "Excluir";
+          deleteBtn.onclick = () => {
+            if (
+              confirm(
+                `Tem certeza que deseja excluir a sala "${sala.nome}"? Esta ação é irreversível!`
+              )
+            ) {
+              excluirSala(salaId);
+            }
+          };
+          modalFooter.insertBefore(deleteBtn, modalFooter.lastElementChild);
+        }
+
+        salaModal.show();
+      } catch (error) {
+        showFeedback(
+          "Erro ao obter detalhes da sala. Verifique a conexão.",
+          "danger"
+        );
+        console.error("Erro na API de detalhes:", error);
+      }
+    });
+  });
+
+  document
+    .getElementById("formNovaSala")
+    ?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch("/api/v1/salas", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          showFeedback(
+            `Erro ao cadastrar: ${result.detail || result.mensagem}`,
+            "danger"
+          );
+          return;
+        }
+
+        novaSalaModal?.hide();
+        showFeedback(result.mensagem, "success");
+        setTimeout(() => window.location.reload(), 1000);
+      } catch (error) {
+        showFeedback("Erro de conexão ao cadastrar sala.", "danger");
+        console.error("Erro na API de criação:", error);
+      }
+    });
+
+  function prepararEdicao(sala) {
+    if (!editarSalaModal) return;
+
+    document.getElementById("editarSalaNome").textContent = sala.nome;
+    document
+      .getElementById("formEditarSala")
+      .setAttribute("data-sala-id", sala.id);
+
+    document.getElementById("editNome").value = sala.nome;
+    document.getElementById("editCapacidade").value = sala.capacidade;
+    document.getElementById("editRecursos").value = sala.recursos;
+
+    editarSalaModal.show();
+  }
+
+  document
+    .getElementById("formEditarSala")
+    ?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const salaId = form.getAttribute("data-sala-id");
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch(`/api/v1/salas/${salaId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          showFeedback(
+            `Erro ao editar: ${result.detail || result.mensagem}`,
+            "danger"
+          );
+          return;
+        }
+
+        editarSalaModal?.hide();
+        showFeedback(result.mensagem, "success");
+        setTimeout(() => window.location.reload(), 1000);
+      } catch (error) {
+        showFeedback("Erro de conexão ao editar sala.", "danger");
+        console.error("Erro na API de edição:", error);
+      }
+    });
+
+  async function excluirSala(salaId) {
+    try {
+      const response = await fetch(`/api/v1/salas/${salaId}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        showFeedback(
+          `Erro ao excluir: ${result.detail || result.mensagem}`,
+          "danger"
+        );
+        return;
+      }
+
+      salaModal?.hide();
+      showFeedback(result.mensagem, "success");
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error) {
+      showFeedback("Erro de conexão ao excluir sala.", "danger");
+      console.error("Erro na API de exclusão:", error);
+    }
+  }
+</script>
 {% endblock %}

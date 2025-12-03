@@ -3,10 +3,6 @@ from sqlmodel import Field, SQLModel, Relationship
 from datetime import date, time
 import enum
 
-# ======================================================
-# ENUMS
-# ======================================================
-
 class TipoUsuario(str, enum.Enum):
     """Define os tipos de usuários (RF015)."""
     COMUM = "COMUM"
@@ -16,13 +12,9 @@ class TipoUsuario(str, enum.Enum):
 class StatusReserva(str, enum.Enum):
     """Define os status possíveis da reserva."""
     PENDENTE = "Pendente"
-    APROVADA = "Aprovada"     # mais natural que “Confirmada”
+    APROVADA = "Aprovada"
     CANCELADA = "Cancelada"
 
-
-# ======================================================
-# MODELOS BASE
-# ======================================================
 
 class UsuarioBase(SQLModel):
     """Campos base para Usuário, excluindo IDs e hash."""
@@ -36,8 +28,7 @@ class CadastroInput(SQLModel):
     nome: str
     email: str
     senha: str
-    tipo: str  # vem do front como string simples ("Comum" ou "Administrador")
-
+    tipo: str
 
 class LoginInput(SQLModel):
     """Modelo para receber dados do formulário de login."""
@@ -61,17 +52,11 @@ class ReservaBase(SQLModel):
     hora_fim: time = Field(description="Hora de término")
     status: StatusReserva = Field(default=StatusReserva.PENDENTE, description="Status atual da reserva")
 
-
-# ======================================================
-# MODELOS DE TABELA (SQLModel)
-# ======================================================
-
 class Usuario(UsuarioBase, table=True):
     """Tabela de Usuários."""
     id: Optional[int] = Field(default=None, primary_key=True)
     senha_hash: str = Field(description="Hash da senha do usuário (não armazenar texto puro)")
 
-    # Relação: Um usuário pode ter várias reservas
     reservas: List["Reserva"] = Relationship(back_populates="usuario")
 
 
@@ -79,7 +64,6 @@ class Sala(SalaBase, table=True):
     """Tabela de Salas."""
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    # Relação: Uma sala pode ter várias reservas
     reservas: List["Reserva"] = Relationship(back_populates="sala")
 
 
@@ -90,11 +74,8 @@ class Reserva(ReservaBase, table=True):
     usuario_id: int = Field(foreign_key="usuario.id")
     sala_id: int = Field(foreign_key="sala.id")
 
-    # Relações bidirecionais
     usuario: Optional[Usuario] = Relationship(back_populates="reservas")
     sala: Optional[Sala] = Relationship(back_populates="reservas")
-
-# --- MODELOS COMPLEMENTARES PARA INPUT / UPDATE ---
 
 class SalaUpdate(SQLModel):
     """Modelo para atualizar informações da sala."""
