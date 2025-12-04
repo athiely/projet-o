@@ -59,7 +59,6 @@
         `;
     }
 
-    /** Lida com o envio do formulário de Login */
     async function handleLoginSubmit(e) {
         e.preventDefault();
         const form = e.target;
@@ -75,7 +74,6 @@
         document.getElementById('feedback-message').innerHTML = '';
 
         try {
-            // Esta é a simulação da chamada real de API: POST para /api/v1/login
             const response = await fetch(`${API_BASE}/login`, { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
