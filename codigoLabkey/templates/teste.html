@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- CoreUI CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/@coreui/coreui@4.2.4/dist/css/coreui.min.css"
+      rel="stylesheet"
+    />
+
+    <title>Grid de Cards com Modal</title>
+
+    <style>
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+        margin: 20px;
+      }
+
+      .person-card {
+        cursor: pointer;
+        transition: transform 0.2s;
+
+        /* torna o card quadrado */
+        aspect-ratio: 1 / 1;
+
+        /* centraliza texto */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        font-size: 20px;
+      }
+
+      .person-card:hover {
+        transform: scale(1.03);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2 class="text-center mt-4 mb-4">Todas as salas</h2>
+
+      <!-- GRID -->
+      <div class="card-grid" id="grid"></div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal fade" id="infoModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalTitle"></h5>
+            <button class="btn-close" data-coreui-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <p><strong>Nome:</strong> <span id="mNome"></span></p>
+            <p><strong> Descrição:</strong> <span id="mDescricao"></span></p>
+            <p><strong>Capacidade:</strong> <span id="mCapacidade"></span></p>
+            <p><strong>Recursos:</strong> <span id="mRecursos"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CoreUI + Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@4.2.4/dist/js/coreui.bundle.min.js"></script>
+
+    <script>
+      // ------------------------------
+      // DADOS DOS CARDS
+      // ------------------------------
+      const salas = [
+        {
+          nome: "M1",
+          descricao: "laboratorio de informatica",
+          capacidade: "50",
+          recursos: "Coisos",
+        },
+        {
+          nome: "M1",
+          descricao: "laboratorio de informatica",
+          capacidade: "50",
+          recursos: "Coisos",
+        },
+        {
+          nome: "M1",
+          descricao: "laboratorio de informatica",
+          capacidade: "50",
+          recursos: "Coisos",
+        },
+        {
+          nome: "M1",
+          descricao: "laboratorio de informatica",
+          capacidade: "50",
+          recursos: "Coisos",
+        },
+        {
+          nome: "M1",
+          descricao: "laboratorio de informatica",
+          capacidade: "50",
+          recursos: "Coisos",
+        },
+        {
+          nome: "M1",
+          descricao: "laboratorio de informatica",
+          capacidade: "50",
+          recursos: "Coisos",
+        },
+        {
+          nome: "M1",
+          descricao: "laboratorio de informatica",
+          capacidade: "50",
+          recursos: "Coisos",
+        },
+      ];
+
+      // ------------------------------
+      // GERAR CARDS AUTOMATICAMENTE
+      // ------------------------------
+      const grid = document.getElementById("grid");
+
+      salas.forEach((salas, index) => {
+        const card = document.createElement("div");
+        card.className = "card person-card p-3 text-center";
+        card.innerHTML = `<strong>${salas.nome}</strong>`;
+        card.onclick = () => abrirModal(index);
+        grid.appendChild(card);
+      });
+
+      // ------------------------------
+      // FUNÇÃO PARA ABRIR MODAL
+      // ------------------------------
+      function abrirModal(i) {
+        const p = salas[i];
+
+        document.getElementById("modalTitle").textContent = p.nome;
+        document.getElementById("mNome").textContent = p.nome;
+        document.getElementById("mDescricao").textContent = p.descricao;
+        document.getElementById("mCapacidade").textContent = p.capacidade;
+        document.getElementById("mRecursos").textContent = p.recursos;
+
+        const modal = new coreui.Modal(document.getElementById("infoModal"));
+        modal.show();
+      }
+    </script>
+  </body>
+</html>

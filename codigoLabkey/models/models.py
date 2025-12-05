@@ -4,57 +4,55 @@ from datetime import date, time
 import enum
 
 class TipoUsuario(str, enum.Enum):
-    """Define os tipos de usuários (RF015)."""
     COMUM = "COMUM"
     ADMINISTRADOR = "ADMINISTRADOR"
 
 
 class StatusReserva(str, enum.Enum):
-    """Define os status possíveis da reserva."""
     PENDENTE = "Pendente"
     APROVADA = "Aprovada"
     CANCELADA = "Cancelada"
 
 
 class UsuarioBase(SQLModel):
-    """Campos base para Usuário, excluindo IDs e hash."""
     nome: str = Field(index=True, description="Nome completo do usuário")
     email: str = Field(unique=True, description="E-mail único para login")
     tipo: TipoUsuario = Field(default=TipoUsuario.COMUM, description="Tipo de usuário")
 
+
 class SalaBase(SQLModel):
-    """Campos base para o modelo de Sala."""
     nome: str = Field(unique=True, index=True, description="Nome identificador da sala")
     descricao: Optional[str] = Field(default=None, description="Descrição da sala")
     capacidade: int = Field(description="Capacidade máxima de pessoas")
-    localizacao: Optional[str] = Field(default=None, description="Localização física da sala")
-    recursos: Optional[str] = Field(default=None, description="Equipamentos ou recursos disponíveis")
+    localizacao: Optional[str] = Field(default=None, description="Localização física da sala") # Opcional
+    recursos: Optional[str] = Field(default=None, description="Equipamentos ou recursos disponíveis") # Opcional
+
 
 class ReservaBase(SQLModel):
-    """Campos base para o modelo de Reserva."""
     data: date = Field(description="Data da reserva")
     hora_inicio: time = Field(description="Hora de início")
     hora_fim: time = Field(description="Hora de término")
     status: StatusReserva = Field(default=StatusReserva.PENDENTE, description="Status atual da reserva")
 
+
 class CadastroInput(SQLModel):
-    """Modelo para receber dados do formulário de cadastro."""
     nome: str
     email: str
     senha: str
     tipo: str
 
+
 class LoginInput(SQLModel):
-    """Modelo para receber dados do formulário de login."""
     email: str
     senha: str
 
+
 class ReservaInput(SQLModel):
-    """Modelo para criar uma nova reserva."""
     data: date
     hora_inicio: time
     hora_fim: time
     sala_id: int
+
 
 class SalaUpdate(SQLModel):
     nome: Optional[str] = None
@@ -63,11 +61,13 @@ class SalaUpdate(SQLModel):
     descricao: Optional[str] = None
     recursos: Optional[str] = None
 
+
 class ReservaUpdate(SQLModel):
     data: Optional[date] = None
     hora_inicio: Optional[time] = None
     hora_fim: Optional[time] = None
     status: Optional[StatusReserva] = None
+
 
 class Usuario(UsuarioBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
