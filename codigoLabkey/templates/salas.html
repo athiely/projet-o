@@ -1,6 +1,150 @@
 {% extends "base_dashboard.html" %}
+
 {% block content %}
+
 <div class="container my-5">
-  <h2 class="text-center mb-4">Todas as Salas</h2>
+    <h2 class="text-center mb-4">🚪 Gerenciamento de Salas</h2>
+
+```
+<div class="card">
+    <div class="card-header">
+        <i class="c-icon cil-list"></i> Lista de Salas
+        
+        <div class="card-header-actions">
+            {% if tipo_usuario == 'ADMINISTRADOR' %}
+            <button class="btn btn-primary btn-sm" 
+                    type="button" 
+                    data-coreui-toggle="modal" 
+                    data-coreui-target="#modalCadastroSala">
+                <i class="c-icon cil-plus"></i> Nova Sala
+            </button>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-responsive-sm table-striped">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Capacidade</th>
+                    <th>Localização</th>
+                    <th>Recursos</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sala in salas %}
+                <tr>
+                    <td><strong>{{ sala.nome }}</strong></td>
+                    <td>{{ sala.capacidade }} pessoas</td>
+                    <td>{{ sala.localizacao or 'Não Informada' }}</td>
+                    <td>{{ sala.recursos or 'Nenhum' }}</td>
+                    <td>
+                        {% if tipo_usuario == 'ADMINISTRADOR' %}
+                        <button class="btn btn-sm btn-warning">Editar</button>
+                        <button class="btn btn-sm btn-danger">Excluir</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                
+                {% if not salas %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Ainda não há salas cadastradas.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal deve estar dentro do content -->
+<div class="modal fade" id="modalCadastroSala" tabindex="-1" aria-labelledby="modalCadastroSalaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="formCadastroSala">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCadastroSalaLabel">📝 Cadastrar Nova Sala</h5>
+                    <button class="btn-close" type="button" data-coreui-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome da Sala:</label>
+                        <input class="form-control" id="nome" name="nome" type="text" placeholder="Ex: M1, Lab Química" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="capacidade" class="form-label">Capacidade Máxima:</label>
+                        <input class="form-control" id="capacidade" name="capacidade" type="number" min="1" placeholder="Ex: 30" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="localizacao" class="form-label">Localização (Bloco):</label>
+                        <input class="form-control" id="localizacao" name="localizacao" type="text" placeholder="Ex: Bloco A, Prédio Principal">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição:</label>
+                        <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Ex: Laboratório de informática com 30 PCs."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="recursos" class="form-label">Recursos:</label>
+                        <input class="form-control" id="recursos" name="recursos" type="text" placeholder="Ex: Projetor, Quadro Branco, Ar Condicionado">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-coreui-dismiss="modal">Fechar</button>
+                    <button class="btn btn-primary" type="submit">Salvar Sala</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+```
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formCadastroSala');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => data[key] = key === 'capacidade' ? parseInt(value) : (value || null));
+
+        try {
+            const response = await fetch('/api/v1/salas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail || `Erro HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+            alert(`Sala "${result.nome}" cadastrada com sucesso!`);
+
+            const modalEl = document.getElementById('modalCadastroSala');
+            const modal = coreui.Modal.getInstance(modalEl) || new coreui.Modal(modalEl);
+            modal.hide();
+
+            window.location.reload();
+        } catch (err) {
+            console.error(err);
+            alert('Falha no cadastro: ' + err.message);
+        }
+    });
+});
+</script>
 
 {% endblock %}

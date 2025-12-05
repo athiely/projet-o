@@ -4,12 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}LabKey - Sistema de Reservas{% endblock %}</title>
+    <!-- CoreUI CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.4.3/dist/css/coreui.min.css"
       rel="stylesheet"
-      integrity="sha384-oMIIhJL1T5s+PxJr6+Qb0pO1IRFB6OGMM+J57UBT3UQKxSVsb++MkXpu9cLqaJxu"
+      xintegrity="sha384-oMIIhJL1T5s+PxJr6+Qb0pO1IRFB6OGMM+J57UBT3UQKxSVsb++MkXpu9cLqaJxu"
       crossorigin="anonymous"
     />
+    <!-- CSS Personalizado -->
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
@@ -21,9 +23,23 @@
           <li class="nav-item">
             <a class="nav-link" href="/reservas">Reservas</a>
           </li>
+          <!-- Exibição do Nome do Usuário (Opcional) -->
+          {% if nome %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-coreui-toggle="dropdown" aria-expanded="false">
+              Olá, {{ nome.split(' ')[0] }} 
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#">Perfil ({{ tipo_usuario }})</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/logout">Sair</a></li>
+            </ul>
+          </li>
+          {% else %}
           <li class="nav-item">
             <a class="btn btn-outline-danger ms-3" href="/logout">Sair</a>
           </li>
+          {% endif %}
         </ul>
       </nav>
 
@@ -31,13 +47,19 @@
         {% block content %}{% endblock %}
       </main>
 
-      <footer class="dsbd-footer text-center py-3 mt-auto"></footer>
+      <footer class="dsbd-footer text-center py-3 mt-auto">
+        <small>LabKey &copy; 2024</small>
+      </footer>
     </div>
 
+    <!-- CoreUI JAVASCRIPT BUNDLE (DEVE SER CARREGADO PRIMEIRO) -->
     <script
       src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.4.3/dist/js/coreui.bundle.min.js"
-      integrity="sha384-SWhFOmxmv1pfTLKVBW7q8uossvuaWNeQFdmaWi6xdldiUjyqG9F6V2R2BOC8gkxx"
+      xintegrity="sha384-SWhFOmxmv1pfTLKVBW7q8uossvuaWNeQFdmaWi6xdldiUjyqG9F6V2R2BOC8gkxx"
       crossorigin="anonymous"
     ></script>
+
+    <!-- PONTO DE INJEÇÃO DE SCRIPTS ESPECÍFICOS DA PÁGINA -->
+    {% block scripts %}{% endblock %}
   </body>
 </html>
