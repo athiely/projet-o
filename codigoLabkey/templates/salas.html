@@ -1,150 +1,290 @@
-{% extends "base_dashboard.html" %}
+{% extends "base_dashboard.html" %} {% block content %}
 
-{% block content %}
+<style>
+  .card-sala {
+   cursor: pointer;
+        transition: transform 0.2s;
+        aspect-ratio: 1 / 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+  }
+
+  /* Animação de crescimento configurada corretamente */
+  .card-sala:hover {
+    transform: scale(1.03);
+  }
+</style>
 
 <div class="container my-5">
-    <h2 class="text-center mb-4">🚪 Gerenciamento de Salas</h2>
+  <h2 class="text-center mb-5">Todas as Salas</h2>
 
-```
-<div class="card">
-    <div class="card-header">
-        <i class="c-icon cil-list"></i> Lista de Salas
-        
-        <div class="card-header-actions">
-            {% if tipo_usuario == 'ADMINISTRADOR' %}
-            <button class="btn btn-primary btn-sm" 
-                    type="button" 
-                    data-coreui-toggle="modal" 
-                    data-coreui-target="#modalCadastroSala">
-                <i class="c-icon cil-plus"></i> Nova Sala
-            </button>
-            {% endif %}
+  <div class="d-flex justify-content-end mb-4">
+    {% if tipo_usuario == 'ADMINISTRADOR' %}
+    <button
+      class="btn btn-primary"
+      type="button"
+      data-coreui-toggle="modal"
+      data-coreui-target="#modalCadastroSala"
+    >
+      <i class="c-icon cil-plus"></i> Nova Sala
+    </button>
+    {% endif %}
+  </div>
+
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+    {% for sala in salas %}
+    <div class="col">
+      <div
+        class="card card-sala text-center border-0 bg-light"
+        style="cursor: pointer; min-height: 150px"
+        data-sala-nome="{{ sala.nome }}"
+        data-sala-capacidade="{{ sala.capacidade }}"
+        data-sala-localizacao="{{ sala.localizacao or 'Não Informada' }}"
+        data-sala-recursos="{{ sala.recursos or 'Nenhum' }}"
+        data-sala-descricao="{{ sala.descricao or 'Nenhuma descrição fornecida.' }}"
+        data-coreui-toggle="modal"
+        data-coreui-target="#modalDetalhesSala"
+      >
+        <div class="card-body d-flex align-items-center justify-content-center">
+          <h5 class="card-title mb-0 text-dark">{{ sala.nome }}</h5>
         </div>
+      </div>
     </div>
-    <div class="card-body">
-        <table class="table table-responsive-sm table-striped">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Capacidade</th>
-                    <th>Localização</th>
-                    <th>Recursos</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for sala in salas %}
-                <tr>
-                    <td><strong>{{ sala.nome }}</strong></td>
-                    <td>{{ sala.capacidade }} pessoas</td>
-                    <td>{{ sala.localizacao or 'Não Informada' }}</td>
-                    <td>{{ sala.recursos or 'Nenhum' }}</td>
-                    <td>
-                        {% if tipo_usuario == 'ADMINISTRADOR' %}
-                        <button class="btn btn-sm btn-warning">Editar</button>
-                        <button class="btn btn-sm btn-danger">Excluir</button>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-                
-                {% if not salas %}
-                <tr>
-                    <td colspan="5" class="text-center text-muted">Ainda não há salas cadastradas.</td>
-                </tr>
-                {% endif %}
-            </tbody>
-        </table>
+    {% endfor %} {% if not salas %}
+    <div class="col-12">
+      <p class="text-center text-muted mt-5">Ainda não há salas cadastradas.</p>
     </div>
-</div>
-
-<!-- Modal deve estar dentro do content -->
-<div class="modal fade" id="modalCadastroSala" tabindex="-1" aria-labelledby="modalCadastroSalaLabel" aria-hidden="true">
+    {% endif %}
+  </div>
+  <div
+    class="modal fade"
+    id="modalCadastroSala"
+    tabindex="-1"
+    aria-labelledby="modalCadastroSalaLabel"
+    aria-hidden="true"
+  >
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form id="formCadastroSala">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalCadastroSalaLabel">📝 Cadastrar Nova Sala</h5>
-                    <button class="btn-close" type="button" data-coreui-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="nome" class="form-label">Nome da Sala:</label>
-                        <input class="form-control" id="nome" name="nome" type="text" placeholder="Ex: M1, Lab Química" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="capacidade" class="form-label">Capacidade Máxima:</label>
-                        <input class="form-control" id="capacidade" name="capacidade" type="number" min="1" placeholder="Ex: 30" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="localizacao" class="form-label">Localização (Bloco):</label>
-                        <input class="form-control" id="localizacao" name="localizacao" type="text" placeholder="Ex: Bloco A, Prédio Principal">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="descricao" class="form-label">Descrição:</label>
-                        <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Ex: Laboratório de informática com 30 PCs."></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="recursos" class="form-label">Recursos:</label>
-                        <input class="form-control" id="recursos" name="recursos" type="text" placeholder="Ex: Projetor, Quadro Branco, Ar Condicionado">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-coreui-dismiss="modal">Fechar</button>
-                    <button class="btn btn-primary" type="submit">Salvar Sala</button>
-                </div>
-            </form>
-        </div>
+      <div class="modal-content">
+        <form id="formCadastroSala">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalCadastroSalaLabel">
+              📝 Cadastrar Nova Sala
+            </h5>
+            <button
+              class="btn-close"
+              type="button"
+              data-coreui-dismiss="modal"
+              aria-label="Fechar"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="nome" class="form-label">Nome da Sala:</label>
+              <input
+                class="form-control"
+                id="nome"
+                name="nome"
+                type="text"
+                placeholder="Ex: M1, Lab Química"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="capacidade" class="form-label"
+                >Capacidade Máxima:</label
+              >
+              <input
+                class="form-control"
+                id="capacidade"
+                name="capacidade"
+                type="number"
+                min="1"
+                placeholder="Ex: 30"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="localizacao" class="form-label"
+                >Localização (Bloco):</label
+              >
+              <input
+                class="form-control"
+                id="localizacao"
+                name="localizacao"
+                type="text"
+                placeholder="Ex: Bloco A, Prédio Principal"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="descricao" class="form-label">Descrição:</label>
+              <textarea
+                class="form-control"
+                id="descricao"
+                name="descricao"
+                rows="3"
+                placeholder="Ex: Laboratório de informática com 30 PCs."
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="recursos" class="form-label">Recursos:</label>
+              <input
+                class="form-control"
+                id="recursos"
+                name="recursos"
+                type="text"
+                placeholder="Ex: Projetor, Quadro Branco, Ar Condicionado"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              class="btn btn-secondary"
+              type="button"
+              data-coreui-dismiss="modal"
+            >
+              Fechar
+            </button>
+            <button class="btn btn-primary" type="submit">Salvar Sala</button>
+          </div>
+        </form>
+      </div>
     </div>
-</div>
-```
+  </div>
 
+  <div
+    class="modal fade"
+    id="modalDetalhesSala"
+    tabindex="-1"
+    aria-labelledby="modalDetalhesSalaLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalDetalhesSalaLabel">
+            <span id="detalheNomeModal"></span>
+          </h5>
+          <button
+            class="btn-close"
+            type="button"
+            data-coreui-dismiss="modal"
+            aria-label="Fechar"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Nome:</strong> <span id="detalheNome"></span></p>
+          <p><strong>Descrição:</strong> <span id="detalheDescricao"></span></p>
+          <p>
+            <strong>Capacidade:</strong> <span id="detalheCapacidade"></span>
+          </p>
+          <p><strong>Recursos:</strong> <span id="detalheRecursos"></span></p>
+          <p>
+            <strong>Localização:</strong> <span id="detalheLocalizacao"></span>
+          </p>
+        </div>
+        <div class="modal-footer">
+          {% if tipo_usuario == 'ADMINISTRADOR' %}
+          <button class="btn btn-warning" id="btnEditarSala">Editar</button>
+          <button class="btn btn-danger" id="btnExcluirSala">Excluir</button>
+          {% endif %}
+          <button
+            class="btn btn-secondary"
+            type="button"
+            data-coreui-dismiss="modal"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('formCadastroSala');
-    if (!form) return;
-
-    form.addEventListener('submit', async function(event) {
+  document.addEventListener("DOMContentLoaded", function () {
+    // 1. Script de Cadastro (Mantido)
+    const form = document.getElementById("formCadastroSala");
+    // ... (restante do código do form de cadastro) ...
+    if (form) {
+      form.addEventListener("submit", async function (event) {
         event.preventDefault();
         const formData = new FormData(form);
         const data = {};
-        formData.forEach((value, key) => data[key] = key === 'capacidade' ? parseInt(value) : (value || null));
+        formData.forEach(
+          (value, key) =>
+            (data[key] = key === "capacidade" ? parseInt(value) : value || null)
+        );
 
         try {
-            const response = await fetch('/api/v1/salas', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+          const response = await fetch("/api/v1/salas", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
 
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.detail || `Erro HTTP ${response.status}`);
-            }
+          if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || `Erro HTTP ${response.status}`);
+          }
 
-            const result = await response.json();
-            alert(`Sala "${result.nome}" cadastrada com sucesso!`);
+          const result = await response.json();
+          alert(`Sala "${result.nome}" cadastrada com sucesso!`);
 
-            const modalEl = document.getElementById('modalCadastroSala');
-            const modal = coreui.Modal.getInstance(modalEl) || new coreui.Modal(modalEl);
-            modal.hide();
+          const modalEl = document.getElementById("modalCadastroSala");
+          const modal =
+            coreui.Modal.getInstance(modalEl) || new coreui.Modal(modalEl);
+          modal.hide();
 
-            window.location.reload();
+          window.location.reload();
         } catch (err) {
-            console.error(err);
-            alert('Falha no cadastro: ' + err.message);
+          console.error(err);
+          alert("Falha no cadastro: " + err.message);
         }
-    });
-});
+      });
+    }
+
+    // 2. Script para o Modal de Detalhes Dinâmico
+    const detalhesModal = document.getElementById("modalDetalhesSala");
+    if (detalhesModal) {
+      detalhesModal.addEventListener("show.coreui.modal", function (event) {
+        const card = event.relatedTarget; // O card que foi clicado
+
+        // Extrai as informações dos data-attributes
+        const nome = card.getAttribute("data-sala-nome");
+        const capacidade = card.getAttribute("data-sala-capacidade");
+        const localizacao = card.getAttribute("data-sala-localizacao");
+        const recursos = card.getAttribute("data-sala-recursos");
+        const descricao = card.getAttribute("data-sala-descricao");
+        // Assumindo que você tem um ID único da sala:
+        // const salaId = card.getAttribute('data-sala-id');
+
+        // Atualiza o Título do Modal e o corpo
+        document.getElementById("detalheNomeModal").textContent = nome;
+
+        document.getElementById("detalheNome").textContent = nome;
+        document.getElementById("detalheCapacidade").textContent =
+          capacidade + " pessoas";
+        document.getElementById("detalheLocalizacao").textContent = localizacao;
+        document.getElementById("detalheRecursos").textContent = recursos;
+        document.getElementById("detalheDescricao").textContent = descricao;
+
+        // Se for ADMINISTRADOR, você pode atualizar os botões de ação:
+        /*
+            {% if tipo_usuario == 'ADMINISTRADOR' %}
+            const btnEditar = document.getElementById('btnEditarSala');
+            const btnExcluir = document.getElementById('btnExcluirSala');
+            
+            // Exemplo: Atualizar links ou data-attributes para as ações
+            // btnEditar.onclick = () => window.location.href = `/salas/editar/${salaId}`;
+            // btnExcluir.setAttribute('data-sala-id', salaId);
+            {% endif %}
+            */
+      });
+    }
+  });
 </script>
 
 {% endblock %}
