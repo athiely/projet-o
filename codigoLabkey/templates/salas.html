@@ -1,29 +1,84 @@
 {% extends "base_dashboard.html" %} {% block content %}
 
 <style>
-  .card-sala {
-   cursor: pointer;
-        transition: transform 0.2s;
-        aspect-ratio: 1 / 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 20px;
+  /* Estilo para o botão de Cadastro (Nova Sala) */
+  .lab_cad_btn .btn {
+    background-color: #03bf63;
+    color: white; /* Adicionando cor branca ao texto para melhor contraste */
+    border-color: #03bf63; /* Definindo a cor da borda igual à do fundo */
   }
 
-  /* Animação de crescimento configurada corretamente */
+  /* Hover do botão de Cadastro (Nova Sala) - Especificidade aumentada */
+  .lab_cad_btn .btn:hover {
+    background-color: #00944c;
+    border-color: #00944c;
+    transform: scale(1.03);
+  }
+
+  /* Estilo para o botão de Edição (Geralmente é .btn-warning) */
+  .edt-btn {
+    background-color: #fff743;
+    color: #333; /* Cor do texto escuro para contraste */
+    border-color: #fff743;
+  }
+
+  /* Hover do botão de Edição */
+  .edt-btn:hover {
+    background-color: #e4dc2e;
+    color: #333;
+    border-color: #e4dc2e;
+  }
+
+  /* Estilo para o botão de Exclusão (Geralmente é .btn-danger) */
+  .modal-footer .exc-btn {
+    background-color: #ff6464;
+    color: white;
+    border-color: #ff6464;
+  }
+
+  /* Hover do botão de Exclusão */
+  .modal-footer .exc-btn:hover {
+    background-color: #ff4545;
+    border-color: #ff4545;
+  }
+
+  /* Estilos do Card Sala (Mantidos) */
+  .card-sala {
+    cursor: pointer;
+    transition: transform 0.2s;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    background-color: #03bf63;
+  }
+
   .card-sala:hover {
     transform: scale(1.03);
+  }
+
+  /* Sobrescrevendo o estilo padrão do .btn-primary */
+  .modal-footer .save-btn {
+    background-color: #03bf63;
+    border-color: #03bf63;
+    color: white;
+  }
+
+  /* Aplicando o hover no .btn-primary */
+  .modal-footer .save-btn:hover {
+    background-color: #00944c;
+    border-color: #00944c;
   }
 </style>
 
 <div class="container my-5">
   <h2 class="text-center mb-5">Todas as Salas</h2>
 
-  <div class="d-flex justify-content-end mb-4">
+  <div class="lab_cad_btn d-flex justify-content-end mb-4">
     {% if tipo_usuario == 'ADMINISTRADOR' %}
     <button
-      class="btn btn-primary"
+      class="btn"
       type="button"
       data-coreui-toggle="modal"
       data-coreui-target="#modalCadastroSala"
@@ -37,7 +92,7 @@
     {% for sala in salas %}
     <div class="col">
       <div
-        class="card card-sala text-center border-0 bg-light"
+        class="card card-sala text-center border-0"
         style="cursor: pointer; min-height: 150px"
         data-sala-nome="{{ sala.nome }}"
         data-sala-capacidade="{{ sala.capacidade }}"
@@ -70,7 +125,7 @@
         <form id="formCadastroSala">
           <div class="modal-header">
             <h5 class="modal-title" id="modalCadastroSalaLabel">
-              📝 Cadastrar Nova Sala
+              Cadastrar Nova Sala
             </h5>
             <button
               class="btn-close"
@@ -146,7 +201,7 @@
             >
               Fechar
             </button>
-            <button class="btn btn-primary" type="submit">Salvar Sala</button>
+            <button class="btn save-btn" type="submit">Salvar Sala</button>
           </div>
         </form>
       </div>
@@ -186,8 +241,8 @@
         </div>
         <div class="modal-footer">
           {% if tipo_usuario == 'ADMINISTRADOR' %}
-          <button class="btn btn-warning" id="btnEditarSala">Editar</button>
-          <button class="btn btn-danger" id="btnExcluirSala">Excluir</button>
+          <button class="edt-btn btn" id="btnEditarSala">Editar</button>
+          <button class="exc-btn btn" id="btnExcluirSala">Excluir</button>
           {% endif %}
           <button
             class="btn btn-secondary"

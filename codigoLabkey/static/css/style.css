@@ -11,6 +11,7 @@ html,
 body {
   width: 100%;
   min-height: 100vh; /* Use min-height para garantir que o container ocupe a altura total */
+  background-color: #f8f8f8;
 }
 
 /* Estilos de Páginas (Index/Dashboard - Mantidos como fornecido) */
@@ -207,25 +208,6 @@ body {
   color: #991B1B;
   background-color: #FEE2E2;
   border-color: #FECACA;
-}
-
-.card-sala {
-  cursor: pointer;
-  /* Transição configurada corretamente */
-  transition: transform 0.2s, box-shadow 0.2s; 
-  /* Adicionei 'box-shadow' na transição para que a sombra apareça suavemente */
-  aspect-ratio: 1 / 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 20px;
-}
-
-/* Animação de crescimento configurada corretamente */
-.card-sala:hover {
-  transform: scale(1.05); 
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important; 
-  z-index: 10;
 }
 
 /* --- Responsividade --- */
