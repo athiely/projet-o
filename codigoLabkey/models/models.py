@@ -11,6 +11,7 @@ class TipoUsuario(str, enum.Enum):
 class StatusReserva(str, enum.Enum):
     PENDENTE = "Pendente"
     APROVADA = "Aprovada"
+    REJEITADA = "Rejeitada"
     CANCELADA = "Cancelada"
 
 

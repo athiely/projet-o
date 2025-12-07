@@ -2,7 +2,7 @@
 
 {% block content %}
 <style>
-    /* Estilos existentes... */
+    /* Estilos existentes... (Não foram alterados, apenas omitidos para brevidade) */
     .table thead th {
         background-color: #03bf63;
         color: white;
@@ -147,7 +147,7 @@
                                     class="btn btn-aprovar btn-status-admin" 
                                     type="button"
                                     data-reserva-id="{{ reserva.id }}"
-                                    data-novo-status="APROVADA"
+                                    data-novo-status="Aprovada" {# 🎯 CORRIGIDO: Era APROVADA #}
                                 >
                                     Aprovar
                                 </button>
@@ -155,7 +155,7 @@
                                     class="btn btn-rejeitar btn-status-admin" 
                                     type="button"
                                     data-reserva-id="{{ reserva.id }}"
-                                    data-novo-status="REJEITADA"
+                                    data-novo-status="Rejeitada" {# 🎯 CORRIGIDO: Era REJEITADA #}
                                 >
                                     Rejeitar
                                 </button>
@@ -164,7 +164,7 @@
                                     class="btn btn-rejeitar btn-status-admin" 
                                     type="button"
                                     data-reserva-id="{{ reserva.id }}"
-                                    data-novo-status="REJEITADA"
+                                    data-novo-status="Rejeitada" {# 🎯 CORRIGIDO: Era REJEITADA #}
                                 >
                                     Rejeitar
                                 </button>
@@ -219,6 +219,7 @@
         </table>
     </div>
 
+    {# ... Modal Cadastro Reserva (Omitido para brevidade) ... #}
     <div
         class="modal fade"
         id="modalCadastroReserva"
@@ -311,6 +312,7 @@
         </div>
     </div>
     
+    {# ... Modal Cancelamento (Omitido para brevidade) ... #}
     <div class="modal fade" id="modalCancelamento" tabindex="-1" aria-labelledby="modalCancelamentoLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -345,6 +347,12 @@
         }
     }
 
+    // 🎯 NOVO: Função auxiliar para formatar o status para o padrão esperado pelo Python Enum (Ex: "aprovada" -> "Aprovada")
+    function formatStatus(status) {
+        if (!status) return "";
+        return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         const modalReserva = document.getElementById("modalCadastroReserva");
         const formReserva = document.getElementById("formReserva");
@@ -352,12 +360,15 @@
         const btnConfirmarCancelamento = document.getElementById("confirmarCancelamento");
 
         // -------------------------------------
-        // 1. Lógica de ADMIN: Gerenciamento de Status (NOVO)
+        // 1. Lógica de ADMIN: Gerenciamento de Status (CORRIGIDO)
         // -------------------------------------
         document.querySelectorAll('.btn-status-admin').forEach(button => {
             button.addEventListener('click', async function() {
                 const idParaAcao = this.getAttribute('data-reserva-id');
-                const novoStatus = this.getAttribute('data-novo-status');
+                const novoStatusRaw = this.getAttribute('data-novo-status');
+                
+                // 🎯 Envia o status no formato corrigido (Ex: 'Aprovada' em vez de 'APROVADA')
+                const novoStatus = formatStatus(novoStatusRaw); 
                 
                 if (!confirm(`Confirma a alteração do status da reserva ${idParaAcao} para ${novoStatus}?`)) {
                     return;
@@ -380,13 +391,14 @@
 
                 } catch (err) {
                     console.error("Erro ao mudar status:", err);
+                    // 🎯 Mensagem de erro mais amigável
                     alert("Falha ao mudar o status: " + (err.message || "Erro desconhecido."));
                 }
             });
         });
 
         // -------------------------------------
-        // 2. Configuração do Modal de Reserva (Cadastro ou Edição)
+        // 2. Configuração do Modal de Reserva (Cadastro ou Edição) (Omitido, sem alteração)
         // -------------------------------------
         if (modalReserva) {
             modalReserva.addEventListener("show.coreui.modal", function (event) {
@@ -422,7 +434,7 @@
 
 
         // -------------------------------------
-        // 3. Submissão do Formulário (POST ou PUT)
+        // 3. Submissão do Formulário (POST ou PUT) (Omitido, sem alteração)
         // -------------------------------------
         if (formReserva) {
             formReserva.addEventListener("submit", async function (event) {
@@ -466,7 +478,7 @@
         }
         
         // -------------------------------------
-        // 4. Configuração do Modal de Cancelamento
+        // 4. Configuração do Modal de Cancelamento (Omitido, sem alteração)
         // -------------------------------------
         if (modalCancelamento) {
             modalCancelamento.addEventListener("show.coreui.modal", function (event) {
@@ -478,7 +490,7 @@
         }
         
         // -------------------------------------
-        // 5. Ação: CANCELAR RESERVA
+        // 5. Ação: CANCELAR RESERVA (Omitido, sem alteração)
         // -------------------------------------
         if (btnConfirmarCancelamento) {
             btnConfirmarCancelamento.addEventListener("click", async function() {
