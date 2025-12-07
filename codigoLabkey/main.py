@@ -10,7 +10,7 @@ import hashlib
 from pathlib import Path
 from models.models import (
     TipoUsuario, Usuario, CadastroInput, LoginInput,
-    Sala, SalaBase
+    Sala, SalaBase, Reserva, ReservaInput, ReservaUpdate, StatusReserva
 )
 
 # Configuração e Inicialização do App
@@ -183,9 +183,6 @@ def criar_sala(
 # Rotas da API de Reservas (Usuário Comum)
 # ----------------------------------------
 
-from models.models import Reserva, ReservaInput, ReservaUpdate, StatusReserva
-
-
 # Solicitar nova reserva
 @app.post(
     "/api/v1/reservas",
@@ -316,10 +313,7 @@ def listar_minhas_reservas(
 # Rotas da API de Reservas (Administrador)
 # ----------------------------------------
 
-from models.models import StatusReserva
-
-
-# 🔍 Listar TODAS as reservas (somente admin)
+# Listar TODAS as reservas (somente admin)
 @app.get(
     "/api/v1/admin/reservas",
     summary="Listar todas as reservas (ADMIN)",
