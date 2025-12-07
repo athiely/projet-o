@@ -1,41 +1,50 @@
-{% extends "base_dashboard.html" %} {% block content %}
+{% extends "base_dashboard.html" %} 
+
+{% block content %}
 
 <style>
+  /* Estilo para o botão de Cadastro (Nova Sala) */
   .lab_cad_btn .btn {
     background-color: #03bf63;
-    color: white; 
-    border-color: #03bf63;
+    color: white; /* Adicionando cor branca ao texto para melhor contraste */
+    border-color: #03bf63; /* Definindo a cor da borda igual à do fundo */
   }
 
+  /* Hover do botão de Cadastro (Nova Sala) - Especificidade aumentada */
   .lab_cad_btn .btn:hover {
     background-color: #00944c;
     border-color: #00944c;
     transform: scale(1.03);
   }
 
+  /* Estilo para o botão de Edição (Geralmente é .btn-warning) */
   .edt-btn {
     background-color: #fff743;
-    color: #333;
+    color: #333; /* Cor do texto escuro para contraste */
     border-color: #fff743;
   }
 
+  /* Hover do botão de Edição */
   .edt-btn:hover {
     background-color: #e4dc2e;
     color: #333;
     border-color: #e4dc2e;
   }
 
+  /* Estilo para o botão de Exclusão (Geralmente é .btn-danger) */
   .modal-footer .exc-btn {
     background-color: #ff6464;
     color: white;
     border-color: #ff6464;
   }
 
+  /* Hover do botão de Exclusão */
   .modal-footer .exc-btn:hover {
     background-color: #ff4545;
     border-color: #ff4545;
   }
 
+  /* Estilos do Card Sala (Mantidos) */
   .card-sala {
     cursor: pointer;
     transition: transform 0.2s;
@@ -44,19 +53,22 @@
     justify-content: center;
     align-items: center;
     font-size: 20px;
-    background-color: #03bf63;
+    background-color: #03bf63 !important; /* Adicionado !important para forçar a cor */
+    color: white !important; /* Garante que o texto seja branco */
   }
 
   .card-sala:hover {
     transform: scale(1.03);
   }
-
+  
+  /* Sobrescrevendo o estilo padrão do .btn-primary */
   .modal-footer .save-btn {
     background-color: #03bf63;
     border-color: #03bf63;
     color: white;
   }
 
+  /* Aplicando o hover no .btn-primary */
   .modal-footer .save-btn:hover {
     background-color: #00944c;
     border-color: #00944c;
@@ -80,11 +92,13 @@
   </div>
 
   <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+
     {% for sala in salas %}
     <div class="col">
       <div
         class="card card-sala text-center border-0"
         style="cursor: pointer; min-height: 150px"
+        data-sala-id="{{ sala.id }}"
         data-sala-nome="{{ sala.nome }}"
         data-sala-capacidade="{{ sala.capacidade }}"
         data-sala-localizacao="{{ sala.localizacao or 'Não Informada' }}"
@@ -94,104 +108,57 @@
         data-coreui-target="#modalDetalhesSala"
       >
         <div class="card-body d-flex align-items-center justify-content-center">
-          <h5 class="card-title mb-0 text-dark">{{ sala.nome }}</h5>
+          <h5 class="card-title mb-0 text-white">{{ sala.nome }}</h5> 
         </div>
       </div>
     </div>
-    {% endfor %} {% if not salas %}
+    {% endfor %}
+
+    {% if not salas %}
     <div class="col-12">
       <p class="text-center text-muted mt-5">Ainda não há salas cadastradas.</p>
     </div>
     {% endif %}
   </div>
-  <div
-    class="modal fade"
-    id="modalCadastroSala"
-    tabindex="-1"
-    aria-labelledby="modalCadastroSalaLabel"
-    aria-hidden="true"
-  >
+
+  <div class="modal fade" id="modalCadastroSala" tabindex="-1" aria-labelledby="modalCadastroSalaLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <form id="formCadastroSala">
           <div class="modal-header">
-            <h5 class="modal-title" id="modalCadastroSalaLabel">
-              Cadastrar Nova Sala
-            </h5>
-            <button
-              class="btn-close"
-              type="button"
-              data-coreui-dismiss="modal"
-              aria-label="Fechar"
-            ></button>
+            <h5 class="modal-title" id="modalCadastroSalaLabel">📝 Cadastrar Nova Sala</h5>
+            <button class="btn-close" type="button" data-coreui-dismiss="modal" aria-label="Fechar"></button>
           </div>
+
           <div class="modal-body">
             <div class="mb-3">
               <label for="nome" class="form-label">Nome da Sala:</label>
-              <input
-                class="form-control"
-                id="nome"
-                name="nome"
-                type="text"
-                placeholder="Ex: M1, Lab Química"
-                required
-              />
+              <input class="form-control" id="nome" name="nome" type="text" placeholder="Ex: M1, Lab Química" required>
             </div>
+
             <div class="mb-3">
-              <label for="capacidade" class="form-label"
-                >Capacidade Máxima:</label
-              >
-              <input
-                class="form-control"
-                id="capacidade"
-                name="capacidade"
-                type="number"
-                min="1"
-                placeholder="Ex: 30"
-                required
-              />
+              <label for="capacidade" class="form-label">Capacidade Máxima:</label>
+              <input class="form-control" id="capacidade" name="capacidade" type="number" min="1" placeholder="Ex: 30" required>
             </div>
+
             <div class="mb-3">
-              <label for="localizacao" class="form-label"
-                >Localização (Bloco):</label
-              >
-              <input
-                class="form-control"
-                id="localizacao"
-                name="localizacao"
-                type="text"
-                placeholder="Ex: Bloco A, Prédio Principal"
-              />
+              <label for="localizacao" class="form-label">Localização (Bloco):</label>
+              <input class="form-control" id="localizacao" name="localizacao" type="text" placeholder="Ex: Bloco A, Prédio Principal">
             </div>
+
             <div class="mb-3">
               <label for="descricao" class="form-label">Descrição:</label>
-              <textarea
-                class="form-control"
-                id="descricao"
-                name="descricao"
-                rows="3"
-                placeholder="Ex: Laboratório de informática com 30 PCs."
-              ></textarea>
+              <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Ex: Laboratório de informática com 30 PCs."></textarea>
             </div>
+
             <div class="mb-3">
               <label for="recursos" class="form-label">Recursos:</label>
-              <input
-                class="form-control"
-                id="recursos"
-                name="recursos"
-                type="text"
-                placeholder="Ex: Projetor, Quadro Branco, Ar Condicionado"
-              />
+              <input class="form-control" id="recursos" name="recursos" type="text" placeholder="Ex: Projetor, Quadro Branco, Ar Condicionado">
             </div>
           </div>
+
           <div class="modal-footer">
-            <button
-              class="btn btn-secondary"
-              type="button"
-              data-coreui-dismiss="modal"
-            >
-              Fechar
-            </button>
+            <button class="btn btn-secondary" type="button" data-coreui-dismiss="modal">Fechar</button>
             <button class="btn save-btn" type="submit">Salvar Sala</button>
           </div>
         </form>
@@ -199,65 +166,145 @@
     </div>
   </div>
 
-  <div
-    class="modal fade"
-    id="modalDetalhesSala"
-    tabindex="-1"
-    aria-labelledby="modalDetalhesSalaLabel"
-    aria-hidden="true"
-  >
+  <div class="modal fade" id="modalDetalhesSala" tabindex="-1" aria-labelledby="modalDetalhesSalaLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
+
         <div class="modal-header">
-          <h5 class="modal-title" id="modalDetalhesSalaLabel">
-            <span id="detalheNomeModal"></span>
-          </h5>
-          <button
-            class="btn-close"
-            type="button"
-            data-coreui-dismiss="modal"
-            aria-label="Fechar"
-          ></button>
+          <h5 class="modal-title" id="modalDetalhesSalaLabel"><span id="detalheNomeModal"></span></h5>
+          <button class="btn-close" type="button" data-coreui-dismiss="modal" aria-label="Fechar"></button>
         </div>
+
         <div class="modal-body">
           <p><strong>Nome:</strong> <span id="detalheNome"></span></p>
           <p><strong>Descrição:</strong> <span id="detalheDescricao"></span></p>
-          <p>
-            <strong>Capacidade:</strong> <span id="detalheCapacidade"></span>
-          </p>
+          <p><strong>Capacidade:</strong> <span id="detalheCapacidade"></span></p>
           <p><strong>Recursos:</strong> <span id="detalheRecursos"></span></p>
-          <p>
-            <strong>Localização:</strong> <span id="detalheLocalizacao"></span>
-          </p>
+          <p><strong>Localização:</strong> <span id="detalheLocalizacao"></span></p>
         </div>
+
         <div class="modal-footer">
           {% if tipo_usuario == 'ADMINISTRADOR' %}
-          <button class="edt-btn btn" id="btnEditarSala">Editar</button>
-          <button class="exc-btn btn" id="btnExcluirSala">Excluir</button>
+          <button class="btn edt-btn" id="btnEditarSala">Editar</button>
+          <button class="btn exc-btn" id="btnExcluirSala">Excluir</button>
           {% endif %}
-          <button
-            class="btn btn-secondary"
-            type="button"
-            data-coreui-dismiss="modal"
-          >
-            Fechar
-          </button>
+          <button class="btn btn-secondary" type="button" data-coreui-dismiss="modal">Fechar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalEdicaoSala" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="formEdicaoSala">
+          <div class="modal-header">
+            <h5 class="modal-title">✏️ Editar Sala: <span id="edicaoNomeTitulo"></span></h5>
+            <button class="btn-close" type="button" data-coreui-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Nome:</label>
+              <input class="form-control" id="editNome" name="nome" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Capacidade:</label>
+              <input class="form-control" id="editCapacidade" name="capacidade" type="number" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Localização:</label>
+              <input class="form-control" id="editLocalizacao" name="localizacao">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Descrição:</label>
+              <textarea class="form-control" id="editDescricao" name="descricao"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Recursos:</label>
+              <input class="form-control" id="editRecursos" name="recursos">
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-coreui-dismiss="modal">Cancelar</button>
+            <button class="btn save-btn" type="submit">Salvar alterações</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="modalConfirmacaoExclusao" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">🚫 Confirmar Exclusão</h5>
+          <button class="btn-close" type="button" data-coreui-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Tem certeza que deseja excluir a sala <strong><span id="nomeSalaExclusao"></span></strong>?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-coreui-dismiss="modal">Cancelar</button>
+          <button class="btn exc-btn" id="confirmarExclusao">Excluir Permanentemente</button>
         </div>
       </div>
     </div>
   </div>
+
 </div>
-{% endblock %} {% block scripts %}
+
+{% endblock %} 
+
+{% block scripts %}
 
 <script>
+  // Variável global para armazenar o ID da sala ativa
+  let salaAtivaId = null; 
+
+  // Função auxiliar para mostrar modais CoreUI/Bootstrap
+  function showCoreUIModal(modalId) {
+    const modalEl = document.getElementById(modalId);
+    // Cria uma nova instância se não existir, senão usa a existente
+    const modal = coreui.Modal.getInstance(modalEl) || new coreui.Modal(modalEl); 
+    modal.show();
+  }
+
+  // Função auxiliar para esconder modais CoreUI/Bootstrap
+  function hideCoreUIModal(modalId) {
+    const modalEl = document.getElementById(modalId);
+    // Pega a instância e esconde
+    const modal = coreui.Modal.getInstance(modalEl); 
+    if (modal) {
+      modal.hide();
+    }
+  }
+
+
   document.addEventListener("DOMContentLoaded", function () {
-    // 1. Script de Cadastro (Mantido)
-    const form = document.getElementById("formCadastroSala");
-    // ... (restante do código do form de cadastro) ...
-    if (form) {
-      form.addEventListener("submit", async function (event) {
+    
+    const detalhesModal = document.getElementById("modalDetalhesSala");
+    const btnEditarSala = document.getElementById("btnEditarSala");
+    const btnExcluirSala = document.getElementById("btnExcluirSala");
+    // ID corrigido no HTML unificado
+    const modalExclusao = document.getElementById("modalConfirmacaoExclusao"); 
+    // ID corrigido no HTML unificado
+    const btnConfirmarExclusao = document.getElementById("confirmarExclusao"); 
+
+    // -------------------------------------
+    // 1. Script de Cadastro (POST /api/v1/salas)
+    // -------------------------------------
+    const formCadastro = document.getElementById("formCadastroSala");
+    if (formCadastro) {
+      formCadastro.addEventListener("submit", async function (event) {
         event.preventDefault();
-        const formData = new FormData(form);
+        const formData = new FormData(formCadastro);
         const data = {};
         formData.forEach(
           (value, key) =>
@@ -278,56 +325,180 @@
 
           const result = await response.json();
           alert(`Sala "${result.nome}" cadastrada com sucesso!`);
-
-          const modalEl = document.getElementById("modalCadastroSala");
-          const modal =
-            coreui.Modal.getInstance(modalEl) || new coreui.Modal(modalEl);
-          modal.hide();
-
+          hideCoreUIModal("modalCadastroSala");
           window.location.reload();
         } catch (err) {
           console.error(err);
-          alert("Falha no cadastro: " + err.message);
+          alert("Falha no cadastro: " + (err.message || "Erro desconhecido."));
         }
       });
     }
 
-    // 2. Script para o Modal de Detalhes Dinâmico
-    const detalhesModal = document.getElementById("modalDetalhesSala");
+
+    // -------------------------------------
+    // 2. Script para o Modal de Detalhes (Armazenamento do ID e dados)
+    // -------------------------------------
     if (detalhesModal) {
       detalhesModal.addEventListener("show.coreui.modal", function (event) {
-        const card = event.relatedTarget; // O card que foi clicado
+        const card = event.relatedTarget; 
 
-        // Extrai as informações dos data-attributes
+        // Extrai o ID e salva na variável global
+        salaAtivaId = card.getAttribute("data-sala-id"); 
+
+        // Extrai as outras informações
         const nome = card.getAttribute("data-sala-nome");
         const capacidade = card.getAttribute("data-sala-capacidade");
         const localizacao = card.getAttribute("data-sala-localizacao");
         const recursos = card.getAttribute("data-sala-recursos");
         const descricao = card.getAttribute("data-sala-descricao");
-        // Assumindo que você tem um ID único da sala:
-        // const salaId = card.getAttribute('data-sala-id');
 
-        // Atualiza o Título do Modal e o corpo
+        // Atualiza o corpo do Modal de Detalhes
         document.getElementById("detalheNomeModal").textContent = nome;
-
         document.getElementById("detalheNome").textContent = nome;
-        document.getElementById("detalheCapacidade").textContent =
-          capacidade + " pessoas";
+        document.getElementById("detalheCapacidade").textContent = capacidade + " pessoas";
         document.getElementById("detalheLocalizacao").textContent = localizacao;
         document.getElementById("detalheRecursos").textContent = recursos;
         document.getElementById("detalheDescricao").textContent = descricao;
 
-        // Se for ADMINISTRADOR, você pode atualizar os botões de ação:
-        /*
-            {% if tipo_usuario == 'ADMINISTRADOR' %}
-            const btnEditar = document.getElementById('btnEditarSala');
-            const btnExcluir = document.getElementById('btnExcluirSala');
-            
-            // Exemplo: Atualizar links ou data-attributes para as ações
-            // btnEditar.onclick = () => window.location.href = `/salas/editar/${salaId}`;
-            // btnExcluir.setAttribute('data-sala-id', salaId);
-            {% endif %}
-            */
+        // Armazena dados nos botões de ação para fácil acesso
+        if (btnEditarSala) {
+          btnEditarSala.setAttribute('data-sala-id', salaAtivaId);
+          btnEditarSala.setAttribute('data-sala-nome', nome);
+          btnEditarSala.setAttribute('data-sala-capacidade', capacidade);
+          btnEditarSala.setAttribute('data-sala-localizacao', localizacao);
+          btnEditarSala.setAttribute('data-sala-recursos', recursos);
+          btnEditarSala.setAttribute('data-sala-descricao', descricao);
+          
+          // Abre o modal de Edição diretamente (se fosse a lógica do Template 2)
+          // No Template 1, abrimos pelo click handler
+        }
+        
+        // Configura o nome da sala no botão/modal de exclusão
+        if (btnExcluirSala) {
+            btnExcluirSala.setAttribute('data-sala-nome', nome);
+            // Configura o click para abrir o modal de confirmação do Template 1
+            btnExcluirSala.onclick = () => showCoreUIModal("modalConfirmacaoExclusao");
+        }
+      });
+    }
+    
+    // -------------------------------------
+    // 3. Preparação para Exclusão (Abre o modal de confirmação)
+    // -------------------------------------
+    if (modalExclusao) {
+      modalExclusao.addEventListener("show.coreui.modal", function () {
+        // Pega o nome da sala do botão de Exclusão (que pegou do modal de detalhes)
+        const nomeSala = btnExcluirSala.getAttribute('data-sala-nome');
+        document.getElementById('nomeSalaExclusao').textContent = nomeSala;
+        
+        // Esconde o modal de detalhes (se o CoreUI não o fizer automaticamente)
+        hideCoreUIModal("modalDetalhesSala");
+      });
+    }
+
+    // -------------------------------------
+    // 4. Ação: EXCLUIR SALA (DELETE /api/v1/salas/{id})
+    // -------------------------------------
+    if (btnConfirmarExclusao) {
+      btnConfirmarExclusao.addEventListener("click", async function() {
+        if (!salaAtivaId) return;
+
+        const nomeSala = document.getElementById('nomeSalaExclusao').textContent;
+        
+        try {
+          const response = await fetch(`/api/v1/salas/${salaAtivaId}`, {
+            method: "DELETE",
+          });
+
+          if (response.status === 204) { // Sucesso na exclusão (No Content)
+            alert(`Sala "${nomeSala}" excluída com sucesso.`);
+            hideCoreUIModal("modalConfirmacaoExclusao");
+            window.location.reload();
+          } else {
+            const err = await response.json();
+            throw new Error(err.detail || `Erro HTTP ${response.status}`); 
+          }
+        } catch (err) {
+          console.error("Erro na exclusão:", err);
+          alert("Falha na exclusão da sala: " + (err.message || "Erro desconhecido."));
+          hideCoreUIModal("modalConfirmacaoExclusao"); // Fecha modal em caso de erro
+        }
+      });
+    }
+
+    // -------------------------------------
+    // 5. Ação: EDITAR SALA (Preparação - Abre o modal de edição)
+    // -------------------------------------
+    if (btnEditarSala) {
+      btnEditarSala.addEventListener("click", function() {
+        // Esconde o modal de detalhes
+        hideCoreUIModal("modalDetalhesSala");
+        
+        // Obtém os dados do próprio botão
+        const id = this.getAttribute('data-sala-id');
+        const nome = this.getAttribute('data-sala-nome');
+        const capacidade = this.getAttribute('data-sala-capacidade');
+        const localizacao = this.getAttribute('data-sala-localizacao');
+        const recursos = this.getAttribute('data-sala-recursos');
+        const descricao = this.getAttribute('data-sala-descricao');
+        
+        // Preenche o Modal de Edição
+        document.getElementById('edicaoNomeTitulo').textContent = nome;
+        document.getElementById('formEdicaoSala').setAttribute('data-sala-id', id);
+        
+        // Preenche os inputs
+        document.getElementById('editNome').value = nome;
+        document.getElementById('editCapacidade').value = capacidade;
+        
+        // Trata strings de placeholder como valores vazios
+        document.getElementById('editLocalizacao').value = (localizacao === 'Não Informada' ? '' : localizacao);
+        document.getElementById('editRecursos').value = (recursos === 'Nenhum' ? '' : recursos);
+        document.getElementById('editDescricao').value = (descricao === 'Nenhuma descrição fornecida.' ? '' : descricao);
+        
+        // Mostra o modal de Edição
+        showCoreUIModal("modalEdicaoSala");
+      });
+    }
+    
+    // -------------------------------------
+    // 6. Ação: EDITAR SALA (Submissão - PUT /api/v1/salas/{id})
+    // -------------------------------------
+    const formEdicao = document.getElementById("formEdicaoSala");
+    if (formEdicao) {
+      formEdicao.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        // Pega o ID que foi setado no data-sala-id do formulário
+        const idParaEditar = this.getAttribute('data-sala-id'); 
+        if (!idParaEditar) return alert("Erro: ID da sala não encontrado para edição.");
+        
+        const formData = new FormData(formEdicao);
+        const data = {};
+        // O nome do input é usado no Template 1/2 para montar o payload, é importante manter o `name`
+        formData.forEach(
+          (value, key) =>
+            (data[key] = key === "capacidade" ? parseInt(value) : value || null)
+        );
+
+        try {
+          const response = await fetch(`/api/v1/salas/${idParaEditar}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || `Erro HTTP ${response.status}`);
+          }
+
+          const result = await response.json();
+          alert(`Sala "${result.nome}" atualizada com sucesso!`);
+          hideCoreUIModal("modalEdicaoSala");
+          window.location.reload();
+        } catch (err) {
+          console.error("Erro na atualização:", err);
+          alert("Falha na atualização da sala: " + (err.message || "Erro desconhecido."));
+        }
       });
     }
   });

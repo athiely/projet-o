@@ -1,7 +1,513 @@
 {% extends "base_dashboard.html" %}
 
 {% block content %}
+<style>
+    /* Estilos existentes... */
+    .table thead th {
+        background-color: #03bf63;
+        color: white;
+        text-align: center;
+        vertical-align: middle;
+    }
+    .table tbody td {
+        vertical-align: middle;
+        text-align: center;
+    }
+    .btn-nova-reserva {
+        background-color: #03bf63;
+        color: white; 
+        border-color: #03bf63;
+        transition: transform 0.2s;
+    }
+    .btn-nova-reserva:hover {
+        background-color: #00944c;
+        border-color: #00944c;
+        transform: scale(1.03);
+    }
+    .status-badge {
+        display: inline-block;
+        padding: .35em .65em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: .25rem;
+    }
+    .status-aprovada {
+        background-color: #198754;
+        color: white;
+    }
+    .status-pendente {
+        background-color: #ffc107;
+        color: #333;
+    }
+    .status-cancelada, .status-rejeitada { 
+        background-color: #dc3545;
+        color: white;
+    }
+    .btn-editar-reserva {
+        background-color: #fff743;
+        color: #333;
+        border-color: #fff743;
+        font-size: 0.85rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .btn-cancelar-reserva {
+        background-color: #ff6464;
+        color: white;
+        border-color: #ff6464;
+        font-size: 0.85rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .modal-footer .save-btn {
+        background-color: #03bf63;
+        border-color: #03bf63;
+        color: white;
+    }
+    .modal-footer .save-btn:hover {
+        background-color: #00944c;
+        border-color: #00944c;
+    }
+    /* Estilos do ADMIN (NOVOS) */
+    .btn-aprovar {
+        background-color: #28a745; 
+        color: white;
+        font-size: 0.85rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .btn-rejeitar {
+        background-color: #dc3545; 
+        color: white;
+        font-size: 0.85rem;
+        padding: 0.25rem 0.5rem;
+    }
+</style>
 
-<div>Aiaiaaiaiaiai</div>
+<div class="container my-5">
+    <h2 class="text-center mb-5">
+        {% if tipo_usuario == 'ADMINISTRADOR' %}
+            Gerenciamento de Todas as Reservas
+        {% else %}
+            Minhas Reservas
+        {% endif %}
+    </h2>
 
+    <div class="d-flex justify-content-end mb-4">
+        <button
+            class="btn btn-nova-reserva"
+            type="button"
+            data-coreui-toggle="modal"
+            data-coreui-target="#modalCadastroReserva"
+        >
+            <i class="c-icon cil-plus"></i> Nova Reserva
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Data</th>
+                    <th scope="col">Sala</th>
+                    <th scope="col">Horário</th>
+                    {% if tipo_usuario == 'ADMINISTRADOR' %}
+                        <th scope="col">Usuário</th> 
+                    {% endif %}
+                    <th scope="col">Situação</th>
+                    <th scope="col">Opções</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in todas_as_reservas %}
+                <tr>
+                    <td>{{ reserva.data | date_format('%d/%m/%Y') }}</td>
+                    <td>{{ reserva.sala.nome }}</td>
+                    <td>{{ reserva.hora_inicio }} - {{ reserva.hora_fim }}</td>
+                    
+                    {% if tipo_usuario == 'ADMINISTRADOR' %}
+                        <td>{{ reserva.usuario.nome }}</td> 
+                    {% endif %}
+                    
+                    {# Exibição do Status #}
+                    <td>
+                        {% set status_string = reserva.status.value | default(reserva.status) %}
+                        
+                        <span class="status-badge status-{{ status_string | lower }}">
+                            {{ status_string | upper }}
+                        </span>
+                    </td>
+                    
+                    <td>
+                        {% if tipo_usuario == 'ADMINISTRADOR' %}
+                            {# Ações de Gerenciamento do Admin #}
+                            {% if reserva.status.value == 'Pendente' %}
+                                <button 
+                                    class="btn btn-aprovar btn-status-admin" 
+                                    type="button"
+                                    data-reserva-id="{{ reserva.id }}"
+                                    data-novo-status="APROVADA"
+                                >
+                                    Aprovar
+                                </button>
+                                <button 
+                                    class="btn btn-rejeitar btn-status-admin" 
+                                    type="button"
+                                    data-reserva-id="{{ reserva.id }}"
+                                    data-novo-status="REJEITADA"
+                                >
+                                    Rejeitar
+                                </button>
+                            {% elif reserva.status.value == 'Aprovada' %}
+                                <button 
+                                    class="btn btn-rejeitar btn-status-admin" 
+                                    type="button"
+                                    data-reserva-id="{{ reserva.id }}"
+                                    data-novo-status="REJEITADA"
+                                >
+                                    Rejeitar
+                                </button>
+                            {% else %}
+                                <span class="text-muted">Status Finalizado</span>
+                            {% endif %}
+                        {% else %}
+                            {# Ações do Usuário Comum: Edição e Cancelamento (só para suas reservas) #}
+                            {% if reserva.status.value == 'Pendente' or reserva.status.value == 'Aprovada' %}
+                                <button 
+                                    class="btn btn-editar-reserva" 
+                                    type="button"
+                                    data-reserva-id="{{ reserva.id }}"
+                                    data-reserva-data="{{ reserva.data }}"
+                                    data-reserva-inicio="{{ reserva.hora_inicio }}"
+                                    data-reserva-fim="{{ reserva.hora_fim }}"
+                                    data-reserva-sala-id="{{ reserva.sala.id }}"
+                                    data-coreui-toggle="modal"
+                                    data-coreui-target="#modalCadastroReserva"
+                                >
+                                    Editar
+                                </button>
+                                <button 
+                                    class="btn btn-cancelar-reserva" 
+                                    type="button"
+                                    data-reserva-id="{{ reserva.id }}"
+                                    data-reserva-nome="{{ reserva.sala.nome }}"
+                                    data-coreui-toggle="modal"
+                                    data-coreui-target="#modalCancelamento"
+                                >
+                                    Cancelar
+                                </button>
+                            {% else %}
+                                <span class="text-muted">Ação indisponível</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    {% set colspan_value = 6 if tipo_usuario == 'ADMINISTRADOR' else 5 %}
+                    <td colspan="{{ colspan_value }}" class="text-center text-muted">
+                        {% if tipo_usuario == 'ADMINISTRADOR' %}
+                            Não há reservas cadastradas no sistema.
+                        {% else %}
+                            Você ainda não possui reservas cadastradas.
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div
+        class="modal fade"
+        id="modalCadastroReserva"
+        tabindex="-1"
+        aria-labelledby="modalCadastroReservaLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formReserva" data-reserva-id="">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalCadastroReservaLabel">
+                            Solicitar Reserva
+                        </h5>
+                        <button
+                            class="btn-close"
+                            type="button"
+                            data-coreui-dismiss="modal"
+                            aria-label="Fechar"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="reservaData" class="form-label">Data:</label>
+                            <input
+                                class="form-control"
+                                id="reservaData"
+                                name="data"
+                                type="date"
+                                required
+                            />
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label for="horaInicio" class="form-label">Horário de Início:</label>
+                                <input
+                                    class="form-control"
+                                    id="horaInicio"
+                                    name="hora_inicio"
+                                    type="time"
+                                    required
+                                />
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="horaFim" class="form-label">Horário de Fim:</label>
+                                <input
+                                    class="form-control"
+                                    id="horaFim"
+                                    name="hora_fim"
+                                    type="time"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salaId" class="form-label">Sala:</label>
+                            <select class="form-control" id="salaId" name="sala_id" required>
+                                <option value="" disabled selected>Selecione uma sala</option>
+                                {% for sala in salas_disponiveis %}
+                                <option value="{{ sala.id }}">{{ sala.nome }} ({{ sala.descricao or 'Sala sem descrição' }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input
+                                class="form-check-input"
+                                id="reservaRecorrente"
+                                name="recorrente"
+                                type="checkbox"
+                            />
+                            <label class="form-check-label" for="reservaRecorrente">
+                                Tornar reserva recorrente? (Ainda não implementado na API)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            class="btn btn-secondary"
+                            type="button"
+                            data-coreui-dismiss="modal"
+                        >
+                            Fechar
+                        </button>
+                        <button class="btn save-btn" type="submit" id="btnSalvarReserva">
+                            Cadastrar Reserva
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="modalCancelamento" tabindex="-1" aria-labelledby="modalCancelamentoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalCancelamentoLabel">❌ Cancelar Reserva</h5>
+                    <button class="btn-close btn-close-white" type="button" data-coreui-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Você tem certeza que deseja **CANCELAR** a reserva da sala <strong id="nomeSalaCancelamento"></strong>?</p>
+                    <p class="text-danger">O cancelamento da reserva é imediato e não pode ser desfeito.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-coreui-dismiss="modal">Voltar</button>
+                    <button class="btn btn-cancelar-reserva" type="button" id="confirmarCancelamento">Sim, Cancelar Reserva</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Variável global para armazenar o ID da reserva ativa (para edição/cancelamento)
+    let reservaAtivaId = null;
+
+    function hideCoreUIModal(modalId) {
+        const modalEl = document.getElementById(modalId);
+        const modal = coreui.Modal.getInstance(modalEl);
+        if (modal) {
+            modal.hide();
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const modalReserva = document.getElementById("modalCadastroReserva");
+        const formReserva = document.getElementById("formReserva");
+        const modalCancelamento = document.getElementById("modalCancelamento");
+        const btnConfirmarCancelamento = document.getElementById("confirmarCancelamento");
+
+        // -------------------------------------
+        // 1. Lógica de ADMIN: Gerenciamento de Status (NOVO)
+        // -------------------------------------
+        document.querySelectorAll('.btn-status-admin').forEach(button => {
+            button.addEventListener('click', async function() {
+                const idParaAcao = this.getAttribute('data-reserva-id');
+                const novoStatus = this.getAttribute('data-novo-status');
+                
+                if (!confirm(`Confirma a alteração do status da reserva ${idParaAcao} para ${novoStatus}?`)) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/v1/reservas/${idParaAcao}/status`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ status: novoStatus })
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.detail || `Erro HTTP ${response.status}`);
+                    }
+
+                    alert(`Status alterado para ${novoStatus} com sucesso!`);
+                    window.location.reload(); 
+
+                } catch (err) {
+                    console.error("Erro ao mudar status:", err);
+                    alert("Falha ao mudar o status: " + (err.message || "Erro desconhecido."));
+                }
+            });
+        });
+
+        // -------------------------------------
+        // 2. Configuração do Modal de Reserva (Cadastro ou Edição)
+        // -------------------------------------
+        if (modalReserva) {
+            modalReserva.addEventListener("show.coreui.modal", function (event) {
+                const button = event.relatedTarget; 
+                
+                // Limpa o formulário e resetta o ID para Cadastro por padrão
+                formReserva.reset();
+                formReserva.setAttribute('data-reserva-id', '');
+                document.getElementById('modalCadastroReservaLabel').textContent = "Solicitar Nova Reserva";
+                document.getElementById('btnSalvarReserva').textContent = "Cadastrar Reserva";
+                reservaAtivaId = null;
+
+                // Se for o botão 'Editar' (só aparece para o Comum), preenche os dados
+                if (button && button.classList.contains('btn-editar-reserva')) {
+                    reservaAtivaId = button.getAttribute('data-reserva-id');
+                    
+                    const data = button.getAttribute('data-reserva-data');
+                    const horaInicio = button.getAttribute('data-reserva-inicio');
+                    const horaFim = button.getAttribute('data-reserva-fim');
+                    const salaId = button.getAttribute('data-reserva-sala-id');
+
+                    // Preenche o formulário
+                    document.getElementById('modalCadastroReservaLabel').textContent = "Editar Reserva";
+                    document.getElementById('btnSalvarReserva').textContent = "Salvar Alterações";
+                    formReserva.setAttribute('data-reserva-id', reservaAtivaId);
+                    document.getElementById('reservaData').value = data;
+                    document.getElementById('horaInicio').value = horaInicio;
+                    document.getElementById('horaFim').value = horaFim;
+                    document.getElementById('salaId').value = salaId;
+                }
+            });
+        }
+
+
+        // -------------------------------------
+        // 3. Submissão do Formulário (POST ou PUT)
+        // -------------------------------------
+        if (formReserva) {
+            formReserva.addEventListener("submit", async function (event) {
+                event.preventDefault();
+                
+                const idParaAcao = formReserva.getAttribute('data-reserva-id');
+                const isEdicao = !!idParaAcao; 
+                const url = isEdicao ? `/api/v1/reservas/${idParaAcao}` : "/api/v1/reservas";
+                const method = isEdicao ? "PUT" : "POST";
+                
+                const formData = new FormData(formReserva);
+                const data = {
+                    sala_id: parseInt(formData.get('sala_id')),
+                    data: formData.get('data'),
+                    hora_inicio: formData.get('hora_inicio'),
+                    hora_fim: formData.get('hora_fim'),
+                };
+
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data),
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.detail || `Erro HTTP ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    const acao = isEdicao ? "atualizada" : "solicitada";
+                    alert(`Reserva ${acao} com sucesso! Status: ${result.status}`);
+                    hideCoreUIModal("modalCadastroReserva");
+                    window.location.reload();
+                } catch (err) {
+                    console.error("Erro na reserva:", err);
+                    alert("Falha na reserva: " + (err.message || "Erro desconhecido."));
+                }
+            });
+        }
+        
+        // -------------------------------------
+        // 4. Configuração do Modal de Cancelamento
+        // -------------------------------------
+        if (modalCancelamento) {
+            modalCancelamento.addEventListener("show.coreui.modal", function (event) {
+                const button = event.relatedTarget; 
+                reservaAtivaId = button.getAttribute('data-reserva-id');
+                const nomeSala = button.getAttribute('data-reserva-nome');
+                document.getElementById('nomeSalaCancelamento').textContent = nomeSala;
+            });
+        }
+        
+        // -------------------------------------
+        // 5. Ação: CANCELAR RESERVA
+        // -------------------------------------
+        if (btnConfirmarCancelamento) {
+            btnConfirmarCancelamento.addEventListener("click", async function() {
+                if (!reservaAtivaId) return;
+
+                const nomeSala = document.getElementById('nomeSalaCancelamento').textContent;
+                
+                try {
+                    const response = await fetch(`/api/v1/reservas/${reservaAtivaId}/cancelar`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.detail || `Erro HTTP ${response.status}`);
+                    }
+
+                    alert(`Reserva da sala "${nomeSala}" cancelada com sucesso.`);
+                    hideCoreUIModal("modalCancelamento");
+                    window.location.reload();
+                } catch (err) {
+                    console.error("Erro no cancelamento:", err);
+                    alert("Falha ao cancelar a reserva: " + (err.message || "Erro desconhecido."));
+                    hideCoreUIModal("modalCancelamento");
+                }
+            });
+        }
+
+    });
+</script>
 {% endblock %}
