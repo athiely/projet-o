@@ -10,7 +10,7 @@ import hashlib
 from pathlib import Path
 from models.models import (
     TipoUsuario, Usuario, CadastroInput, LoginInput,
-    Sala, SalaBase
+    Sala, SalaBase, Reserva, ReservaInput, ReservaUpdate, StatusReserva
 )
 
 # Configuração e Inicialização do App
@@ -177,3 +177,196 @@ def criar_sala(
     session.refresh(sala)
 
     return sala
+
+
+# ----------------------------------------
+# Rotas da API de Reservas (Usuário Comum)
+# ----------------------------------------
+
+# Solicitar nova reserva
+@app.post(
+    "/api/v1/reservas",
+    summary="Solicitar reserva de uma sala",
+    status_code=status.HTTP_201_CREATED
+)
+def solicitar_reserva(
+    dados: ReservaInput,
+    request: Request,
+    session: Session = Depends(get_session)
+):
+    if "usuario_id" not in request.session:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado.")
+
+    usuario_id = request.session["usuario_id"]
+
+    # Verifica se a sala existe
+    sala = session.get(Sala, dados.sala_id)
+    if not sala:
+        raise HTTPException(status_code=404, detail="Sala não encontrada.")
+
+    # Cria solicitação
+    reserva = Reserva(
+        data=dados.data,
+        hora_inicio=dados.hora_inicio,
+        hora_fim=dados.hora_fim,
+        sala_id=dados.sala_id,
+        usuario_id=usuario_id,
+        status=StatusReserva.PENDENTE
+    )
+
+    session.add(reserva)
+    session.commit()
+    session.refresh(reserva)
+
+    return {"mensagem": "Solicitação de reserva enviada com sucesso!", "reserva_id": reserva.id}
+
+
+
+# Editar reserva (volta automaticamente para PENDENTE)
+@app.put(
+    "/api/v1/reservas/{reserva_id}",
+    summary="Editar uma reserva existente do usuário"
+)
+def editar_reserva(
+    reserva_id: int,
+    dados: ReservaUpdate,
+    request: Request,
+    session: Session = Depends(get_session)
+):
+    if "usuario_id" not in request.session:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado.")
+
+    usuario_id = request.session["usuario_id"]
+
+    reserva = session.get(Reserva, reserva_id)
+    if not reserva:
+        raise HTTPException(status_code=404, detail="Reserva não encontrada.")
+
+    # Garantir que a reserva é do usuário logado
+    if reserva.usuario_id != usuario_id:
+        raise HTTPException(status_code=403, detail="Você não tem permissão para editar esta reserva.")
+
+    # Atualiza campos
+    for campo, valor in dados.dict(exclude_unset=True).items():
+        setattr(reserva, campo, valor)
+
+    # Sempre volta para pendente
+    reserva.status = StatusReserva.PENDENTE
+
+    session.add(reserva)
+    session.commit()
+    session.refresh(reserva)
+
+    return {"mensagem": "Reserva atualizada e reenviada para análise.", "reserva": reserva}
+
+
+
+# Cancelar reserva
+@app.delete(
+    "/api/v1/reservas/{reserva_id}",
+    summary="Cancelar uma reserva do usuário"
+)
+def cancelar_reserva(
+    reserva_id: int,
+    request: Request,
+    session: Session = Depends(get_session)
+):
+    if "usuario_id" not in request.session:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado.")
+
+    usuario_id = request.session["usuario_id"]
+
+    reserva = session.get(Reserva, reserva_id)
+    if not reserva:
+        raise HTTPException(status_code=404, detail="Reserva não encontrada.")
+
+    if reserva.usuario_id != usuario_id:
+        raise HTTPException(status_code=403, detail="Você não pode cancelar esta reserva.")
+
+    session.delete(reserva)
+    session.commit()
+
+    return {"mensagem": "Reserva cancelada com sucesso."}
+
+# Listar reservas do próprio usuário
+@app.get(
+    "/api/v1/minhas_reservas",
+    summary="Listar todas as reservas do usuário logado"
+)
+def listar_minhas_reservas(
+    request: Request,
+    session: Session = Depends(get_session)
+):
+    if "usuario_id" not in request.session:
+        raise HTTPException(status_code=401, detail="Usuário não autenticado.")
+
+    usuario_id = request.session["usuario_id"]
+
+    reservas = session.exec(
+        select(Reserva).where(Reserva.usuario_id == usuario_id)
+    ).all()
+
+    return reservas
+
+
+# ----------------------------------------
+# Rotas da API de Reservas (Administrador)
+# ----------------------------------------
+
+# Listar TODAS as reservas (somente admin)
+@app.get(
+    "/api/v1/admin/reservas",
+    summary="Listar todas as reservas (ADMIN)",
+    dependencies=[Depends(verificar_admin)]
+)
+def listar_reservas_admin(session: Session = Depends(get_session)):
+    reservas = session.exec(select(Reserva)).all()
+    return reservas
+
+
+
+# Aprovar reserva (somente admin)
+@app.put(
+    "/api/v1/admin/reservas/{reserva_id}/aprovar",
+    summary="Aprovar solicitação de reserva",
+    dependencies=[Depends(verificar_admin)]
+)
+def aprovar_reserva(
+    reserva_id: int,
+    session: Session = Depends(get_session)
+):
+    reserva = session.get(Reserva, reserva_id)
+    if not reserva:
+        raise HTTPException(status_code=404, detail="Reserva não encontrada.")
+
+    reserva.status = StatusReserva.APROVADA
+
+    session.add(reserva)
+    session.commit()
+    session.refresh(reserva)
+
+    return {"mensagem": "Reserva aprovada com sucesso!", "reserva": reserva}
+
+
+
+# Reprovar/Cancelar solicitação (somente admin)
+@app.put(
+    "/api/v1/admin/reservas/{reserva_id}/reprovar",
+    summary="Reprovar solicitação de reserva",
+    dependencies=[Depends(verificar_admin)]
+)
+def reprovar_reserva(
+    reserva_id: int,
+    session: Session = Depends(get_session)
+):
+    reserva = session.get(Reserva, reserva_id)
+    if not reserva:
+        raise HTTPException(status_code=404, detail="Reserva não encontrada.")
+
+    reserva.status = StatusReserva.CANCELADA
+
+    session.add(reserva)
+    session.commit()
+    session.refresh(reserva)
+
+    return {"mensagem": "Reserva reprovada/cancelada com sucesso.", "reserva": reserva}

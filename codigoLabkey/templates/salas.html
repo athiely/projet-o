@@ -1,48 +1,41 @@
 {% extends "base_dashboard.html" %} {% block content %}
 
 <style>
-  /* Estilo para o botão de Cadastro (Nova Sala) */
   .lab_cad_btn .btn {
     background-color: #03bf63;
-    color: white; /* Adicionando cor branca ao texto para melhor contraste */
-    border-color: #03bf63; /* Definindo a cor da borda igual à do fundo */
+    color: white; 
+    border-color: #03bf63;
   }
 
-  /* Hover do botão de Cadastro (Nova Sala) - Especificidade aumentada */
   .lab_cad_btn .btn:hover {
     background-color: #00944c;
     border-color: #00944c;
     transform: scale(1.03);
   }
 
-  /* Estilo para o botão de Edição (Geralmente é .btn-warning) */
   .edt-btn {
     background-color: #fff743;
-    color: #333; /* Cor do texto escuro para contraste */
+    color: #333;
     border-color: #fff743;
   }
 
-  /* Hover do botão de Edição */
   .edt-btn:hover {
     background-color: #e4dc2e;
     color: #333;
     border-color: #e4dc2e;
   }
 
-  /* Estilo para o botão de Exclusão (Geralmente é .btn-danger) */
   .modal-footer .exc-btn {
     background-color: #ff6464;
     color: white;
     border-color: #ff6464;
   }
 
-  /* Hover do botão de Exclusão */
   .modal-footer .exc-btn:hover {
     background-color: #ff4545;
     border-color: #ff4545;
   }
 
-  /* Estilos do Card Sala (Mantidos) */
   .card-sala {
     cursor: pointer;
     transition: transform 0.2s;
@@ -58,14 +51,12 @@
     transform: scale(1.03);
   }
 
-  /* Sobrescrevendo o estilo padrão do .btn-primary */
   .modal-footer .save-btn {
     background-color: #03bf63;
     border-color: #03bf63;
     color: white;
   }
 
-  /* Aplicando o hover no .btn-primary */
   .modal-footer .save-btn:hover {
     background-color: #00944c;
     border-color: #00944c;
