@@ -2,7 +2,6 @@
 
 {% block content %}
 <style>
-    /* Estilos existentes... (Não foram alterados, apenas omitidos para brevidade) */
     .table thead th {
         background-color: #03bf63;
         color: white;
@@ -22,6 +21,7 @@
     .btn-nova-reserva:hover {
         background-color: #00944c;
         border-color: #00944c;
+        color: white;
         transform: scale(1.03);
     }
     .status-badge {
@@ -336,7 +336,6 @@
 
 {% block scripts %}
 <script>
-    // Variável global para armazenar o ID da reserva ativa (para edição/cancelamento)
     let reservaAtivaId = null;
 
     function hideCoreUIModal(modalId) {
@@ -347,7 +346,6 @@
         }
     }
 
-    // 🎯 NOVO: Função auxiliar para formatar o status para o padrão esperado pelo Python Enum (Ex: "aprovada" -> "Aprovada")
     function formatStatus(status) {
         if (!status) return "";
         return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
@@ -359,15 +357,11 @@
         const modalCancelamento = document.getElementById("modalCancelamento");
         const btnConfirmarCancelamento = document.getElementById("confirmarCancelamento");
 
-        // -------------------------------------
-        // 1. Lógica de ADMIN: Gerenciamento de Status (CORRIGIDO)
-        // -------------------------------------
         document.querySelectorAll('.btn-status-admin').forEach(button => {
             button.addEventListener('click', async function() {
                 const idParaAcao = this.getAttribute('data-reserva-id');
                 const novoStatusRaw = this.getAttribute('data-novo-status');
                 
-                // 🎯 Envia o status no formato corrigido (Ex: 'Aprovada' em vez de 'APROVADA')
                 const novoStatus = formatStatus(novoStatusRaw); 
                 
                 if (!confirm(`Confirma a alteração do status da reserva ${idParaAcao} para ${novoStatus}?`)) {
@@ -391,27 +385,21 @@
 
                 } catch (err) {
                     console.error("Erro ao mudar status:", err);
-                    // 🎯 Mensagem de erro mais amigável
                     alert("Falha ao mudar o status: " + (err.message || "Erro desconhecido."));
                 }
             });
         });
 
-        // -------------------------------------
-        // 2. Configuração do Modal de Reserva (Cadastro ou Edição) (Omitido, sem alteração)
-        // -------------------------------------
         if (modalReserva) {
             modalReserva.addEventListener("show.coreui.modal", function (event) {
                 const button = event.relatedTarget; 
                 
-                // Limpa o formulário e resetta o ID para Cadastro por padrão
                 formReserva.reset();
                 formReserva.setAttribute('data-reserva-id', '');
                 document.getElementById('modalCadastroReservaLabel').textContent = "Solicitar Nova Reserva";
                 document.getElementById('btnSalvarReserva').textContent = "Cadastrar Reserva";
                 reservaAtivaId = null;
 
-                // Se for o botão 'Editar' (só aparece para o Comum), preenche os dados
                 if (button && button.classList.contains('btn-editar-reserva')) {
                     reservaAtivaId = button.getAttribute('data-reserva-id');
                     
@@ -420,7 +408,6 @@
                     const horaFim = button.getAttribute('data-reserva-fim');
                     const salaId = button.getAttribute('data-reserva-sala-id');
 
-                    // Preenche o formulário
                     document.getElementById('modalCadastroReservaLabel').textContent = "Editar Reserva";
                     document.getElementById('btnSalvarReserva').textContent = "Salvar Alterações";
                     formReserva.setAttribute('data-reserva-id', reservaAtivaId);
@@ -432,10 +419,6 @@
             });
         }
 
-
-        // -------------------------------------
-        // 3. Submissão do Formulário (POST ou PUT) (Omitido, sem alteração)
-        // -------------------------------------
         if (formReserva) {
             formReserva.addEventListener("submit", async function (event) {
                 event.preventDefault();
@@ -477,9 +460,6 @@
             });
         }
         
-        // -------------------------------------
-        // 4. Configuração do Modal de Cancelamento (Omitido, sem alteração)
-        // -------------------------------------
         if (modalCancelamento) {
             modalCancelamento.addEventListener("show.coreui.modal", function (event) {
                 const button = event.relatedTarget; 
@@ -489,9 +469,6 @@
             });
         }
         
-        // -------------------------------------
-        // 5. Ação: CANCELAR RESERVA (Omitido, sem alteração)
-        // -------------------------------------
         if (btnConfirmarCancelamento) {
             btnConfirmarCancelamento.addEventListener("click", async function() {
                 if (!reservaAtivaId) return;

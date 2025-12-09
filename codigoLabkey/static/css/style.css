@@ -1,213 +1,277 @@
+:root {
+    /* --- Cores (Paleta LabKey) --- */
+    --color-primary: #03bf63;       /* Verde Principal (Sucesso/Ação) */
+    --color-primary-dark: #00944c;  /* Verde Escuro (Hover/Foco) */
+    --color-text-dark: #212529;     /* Texto Principal (Alto Contraste) */
+    --color-text-muted: #6c757d;    /* Texto Secundário */
+    --color-background-light: #ffffff; /* Fundo Principal */
+    --color-background-gray: #f8f9fa; /* Fundo Secundário (Estrutura) */
+    --color-border: #dee2e6;        /* Bordas */
+    
+    /* --- Tipografia --- */
+    --font-family-main: "Lexend", sans-serif;
+    --font-size-base: 1rem;
+    
+    /* --- Escala de Spacing (Design System baseado em 8px) --- */
+    --spacing-xs: 4px;    /* 0.25rem */
+    --spacing-sm: 8px;    /* 0.5rem */
+    --spacing-md: 16px;   /* 1rem */
+    --spacing-lg: 32px;   /* 2rem */
+    --spacing-xl: 48px;   /* 3rem */
+    
+    /* --- Border Radius --- */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Lexend", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-family-main);
 }
 
 html,
 body {
-  width: 100%;
-  min-height: 100vh; /* Use min-height para garantir que o container ocupe a altura total */
-  background-color: #f8f8f8;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--color-background-light);
+    color: var(--color-text-dark);
 }
 
-/* Estilos de Páginas (Index/Dashboard - Mantidos como fornecido) */
-.index-container {
+/* --- Estilos de Botões (Usando Bootstrap como base) --- */
+
+.btn {
+    border-radius: 0.375rem;
+}
+
+/* Botões Primários (Ação Principal) */
+.btn-primary {
+    background-color: var(--color-primary) !important;
+    color: var(--color-background-light) !important;
+    border: 2px solid var(--color-primary) !important;
+    transition: all 0.2s ease;
+    border-radius: var(--radius-sm);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
+    box-shadow: 0 4px 8px rgba(3, 191, 99, 0.2); /* Sombra sutil ao interagir */
+    /* outline: 2px solid var(--color-primary-dark); */
+    outline-offset: 2px;
+}
+
+/* Botões Outline (Ação Secundária) */
+.btn-outline-primary {
+    background-color: transparent !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary) !important;
+    border: solid 2px;
+    transition: all 0.2s ease;
+    border-radius: var(--radius-sm);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: var(--color-primary) !important;
+    color: var(--color-background-light) !important;
+        /* box-shadow: 0 0 0 0.25rem rgba(3, 191, 99, 0.25);  */
+    outline: none;
+}
+
+/* Links em Formulários */
+.form-container a, .return a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.form-container a:hover, .return a:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline; /* Feedback claro de que é um link */
+}
+
+/* --- Layouts de Página --- */
+
+.index-container, .dsbd-container {
     display: flex;
     flex-direction: column;
     width: 100%;
     min-height: 100vh;
-    background-color: #03bf63;
 }
 
-.dsbd-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-height: 100vh;
-  background-color:#ffffff
-}
-
+/* A navegação deve ser consistente */
 .index-nav, .dsbd-nav {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: flex-end; /* Mantendo o original */
     align-items: center;
-    padding: 1rem;
-    background-color: #ffffff;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background-color: var(--color-background-light);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Sombra sutil para destaque */
 }
+
+
 
 .dsbd-nav {
-  background-color: #dddee0;
-  padding: 1.5rem;
-}
-
-.nav-img {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.index-main, .dsbd-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem;
-}
-
-.index-txt {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    background-color: var(--color-background-gray);
+    padding: var(--spacing-md) var(--spacing-xl); /* Mais espaçoso no dashboard */
 }
 
 .nav-itens, .nav {
-  display: flex;
-  gap: 10px;
+    display: flex;
+    gap: var(--spacing-sm); /* Espaçamento padrão de 8px entre os itens de navegação */
 }
 
-.nav-itens   .btn-outline-primary {
-  background-color: #ffffff;
-  border-color: #03bf63;
-  color: #03bf63;
-  border: solid 2px;
+/* --- Seção Principal (Main/Hero) --- */
+
+.index-main {
+    display: flex;
+    flex-direction: row; /* Alterado para row para layout hero desktop */
+    align-items: center;
+    justify-content: space-around;
+    flex-grow: 1; /* Permite que ocupe o espaço restante */
+    padding: var(--spacing-xl);
 }
 
-.nav-itens .btn-outline-primary:hover {
-  background-color: #03bf63;
-  color: #ffffff;
-  border: solid 2px #03bf63;
+/* Define a nova classe para o Main */
+.min-vh-85 {
+    min-height: 85vh; /* 85% da altura da viewport */
 }
 
-.nav-itens .btn-primary {
-  background-color: #03bf63;
-  color: #ffffff;
-  border: solid 2px #03bf63;
+/* style.css */
+
+.index-txt h2.lead strong {
+    font-weight: 700; 
+    color: var(--color-text-dark);
 }
 
-.nav-itens .btn-primary:hover {
-  background-color: #00944c;
-  border-color: #00944c;
+.index-txt {
+    /* Garante que o texto ocupe um espaço definido */
+    max-width: 500px;
 }
 
-.index-footer {
-  display: flex;
-  background-color: #ffffff;
-  height: 70px;
-  align-items: baseline;
+.index-txt h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--color-primary-dark); /* Destaque na marca */
+    margin-bottom: var(--spacing-sm);
 }
 
-.dsbd-footer {
-  display: flex;
-  background-color: #dddee0;
-  height: 70px;
-  align-items: baseline;
+.index-txt h2 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
 }
 
+.index-img img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* --- Rodapé --- */
+.index-footer, .dsbd-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-background-gray);
+    height: 70px; /* <--- Diminua este valor */
+    border-top: 1px solid var(--color-border);
+}
 
 /* --- Estilos de Autenticação (auth) --- */
 
 .auth-container {
-  display: flex;
-  width: 100%;
-  min-height: 100vh;
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
 }
 
-
-
-/* --- Aside (logo) --- */
+/* Aside (logo) - Cor de fundo suave */
 .aside-auth {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 40%;
-  background-color: #dddee0;
-  padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+    background-color: var(--color-background-gray);
+    padding: var(--spacing-xl);
 }
 
 .aside-auth img {
-  width: 80%;
-  max-width: 400px;
+    width: 80%;
+    max-width: 400px;
+    opacity: 0.9; /* Suaviza a imagem de fundo/lateral */
 }
 
-/* --- Main (form) --- */
+/* Main (form) */
 .auth-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 60%;
-  padding: 2rem;
-}
-
-.auth-txt {
-  text-align: left;
-  width: 100%;
-  margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+    padding: var(--spacing-lg);
+    background-color: var(--color-background-light);
 }
 
 .form-container {
-  width: 100%;
-  max-width: 500px;
+    width: 100%;
+    max-width: 450px; /* Levemente mais estreito para melhor foco */
 }
 
 .form-container form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md); /* Espaçamento de 16px entre campos */
 }
 
-.form-container form .btn { /* Alvo mais específico para o botão */
-  background-color: #03bf63;
-  color: #ffffff; /* Cor do texto no botão */
-  border: none;
-  transition: background-color 0.3s;
+/* Adiciona estilo de foco aos inputs (UX) */
+.form-container .form-control:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.25rem rgba(3, 191, 99, 0.25);
 }
 
-.form-container form .btn:hover {
-  background-color: #00944c;
-  color: #ffffff;
-}
 
-.form-container a {
-  color: #03bf63;
-  text-decoration: none;
-}
+/* --- Estilos de Feedback (Aprimorados) --- */
 
-.return {
-  text-align: center;
-  margin-top: 1rem;
-}
-
-.return a {
-  color: #03bf63;
-  text-decoration: none;
-}
-
-/* Estilos de Feedback */
 .alert-custom {
-  padding: 0.75rem 1.25rem;
-  margin-bottom: 1rem;
-  border: 1px solid transparent;
-  border-radius: 0.5rem;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
 }
 
 .alert-success {
-  color: #065F46;
-  background-color: #D1FAE5;
-  border-color: #A7F3D0;
+    /* Contraste melhorado */
+    color: #047857; /* Verde escuro forte */
+    background-color: #D1FAE5;
+    border-color: #6ee7b7;
 }
 
 .alert-danger {
-  color: #991B1B;
-  background-color: #FEE2E2;
-  border-color: #FECACA;
+    /* Contraste melhorado */
+    color: #991B1B;
+    background-color: #FEE2E2;
+    border-color: #FCA5A5;
+}
+
+/* --- Responsividade (Ajustado com variáveis de espaçamento) --- */
+@media (max-width: 1024px) {
+    .auth-container {
+        flex-direction: column;
+    }
+
+    .aside-auth,
+    .auth-main {
+        width: 100%;
+        padding: var(--spacing-lg);
+    }
 }
 
 /* --- Responsividade --- */

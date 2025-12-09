@@ -467,8 +467,3 @@ def mudar_status_reserva(
     session.refresh(reserva)
 
     return {"mensagem": f"Status alterado para {novo_status_str} com sucesso!", "status": reserva.status.value}
-
-
-# As rotas /aprovar e /reprovar são agora substituídas por /status no frontend Admin
-# Se desejar mantê-las por conveniência ou para uso futuro, elas devem ser corrigidas.
-# Neste exemplo, elas foram removidas em favor da rota /status unificada, que é melhor para o frontend.
