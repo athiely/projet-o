@@ -88,12 +88,14 @@
 <div class="container my-5">
     <h2 class="text-center mb-5">
         {% if tipo_usuario == 'ADMINISTRADOR' %}
-            Gerenciamento de Todas as Reservas
+            Todas as Reservas
         {% else %}
             Minhas Reservas
         {% endif %}
     </h2>
 
+
+{% if tipo_usuario != 'ADMINISTRADOR' %}
     <div class="d-flex justify-content-end mb-4">
         <button
             class="btn btn-nova-reserva"
@@ -104,6 +106,7 @@
             <i class="c-icon cil-plus"></i> Nova Reserva
         </button>
     </div>
+{% endif %}
 
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
@@ -130,7 +133,6 @@
                         <td>{{ reserva.usuario.nome }}</td> 
                     {% endif %}
                     
-                    {# Exibição do Status #}
                     <td>
                         {% set status_string = reserva.status.value | default(reserva.status) %}
                         
@@ -141,13 +143,12 @@
                     
                     <td>
                         {% if tipo_usuario == 'ADMINISTRADOR' %}
-                            {# Ações de Gerenciamento do Admin #}
                             {% if reserva.status.value == 'Pendente' %}
                                 <button 
                                     class="btn btn-aprovar btn-status-admin" 
                                     type="button"
                                     data-reserva-id="{{ reserva.id }}"
-                                    data-novo-status="Aprovada" {# 🎯 CORRIGIDO: Era APROVADA #}
+                                    data-novo-status="Aprovada"
                                 >
                                     Aprovar
                                 </button>
@@ -155,7 +156,7 @@
                                     class="btn btn-rejeitar btn-status-admin" 
                                     type="button"
                                     data-reserva-id="{{ reserva.id }}"
-                                    data-novo-status="Rejeitada" {# 🎯 CORRIGIDO: Era REJEITADA #}
+                                    data-novo-status="Rejeitada"
                                 >
                                     Rejeitar
                                 </button>
@@ -164,7 +165,7 @@
                                     class="btn btn-rejeitar btn-status-admin" 
                                     type="button"
                                     data-reserva-id="{{ reserva.id }}"
-                                    data-novo-status="Rejeitada" {# 🎯 CORRIGIDO: Era REJEITADA #}
+                                    data-novo-status="Rejeitada"
                                 >
                                     Rejeitar
                                 </button>
@@ -172,7 +173,6 @@
                                 <span class="text-muted">Status Finalizado</span>
                             {% endif %}
                         {% else %}
-                            {# Ações do Usuário Comum: Edição e Cancelamento (só para suas reservas) #}
                             {% if reserva.status.value == 'Pendente' or reserva.status.value == 'Aprovada' %}
                                 <button 
                                     class="btn btn-editar-reserva" 
@@ -219,7 +219,6 @@
         </table>
     </div>
 
-    {# ... Modal Cadastro Reserva (Omitido para brevidade) ... #}
     <div
         class="modal fade"
         id="modalCadastroReserva"
@@ -312,12 +311,11 @@
         </div>
     </div>
     
-    {# ... Modal Cancelamento (Omitido para brevidade) ... #}
     <div class="modal fade" id="modalCancelamento" tabindex="-1" aria-labelledby="modalCancelamentoLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="modalCancelamentoLabel">❌ Cancelar Reserva</h5>
+                    <h5 class="modal-title" id="modalCancelamentoLabel">Cancelar Reserva</h5>
                     <button class="btn-close btn-close-white" type="button" data-coreui-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">

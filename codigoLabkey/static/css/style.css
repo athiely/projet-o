@@ -26,9 +26,13 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
 
+/* --- ESTILOS GLOBAIS E RESET --- */
+
 * {
+    /* Remove margens e preenchimentos padrões */
     margin: 0;
     padding: 0;
+    /* Garante que padding e borda não aumentem o tamanho final do elemento */
     box-sizing: border-box;
     font-family: var(--font-family-main);
 }
@@ -41,14 +45,16 @@ body {
     color: var(--color-text-dark);
 }
 
-/* --- Estilos de Botões (Usando Bootstrap como base) --- */
+/* --- ESTILOS DE BOTÕES --- */
 
+/* Estilo geral para todos os botões */
 .btn {
     border-radius: 0.375rem;
 }
 
 /* Botões Primários (Ação Principal) */
 .btn-primary {
+    /* Define cor de fundo e texto, usando !important para garantir precedência */
     background-color: var(--color-primary) !important;
     color: var(--color-background-light) !important;
     border: 2px solid var(--color-primary) !important;
@@ -58,14 +64,14 @@ body {
 
 .btn-primary:hover,
 .btn-primary:focus {
+    /* Efeito de hover/foco: cor mais escura e sombra sutil */
     background-color: var(--color-primary-dark) !important;
     border-color: var(--color-primary-dark) !important;
-    box-shadow: 0 4px 8px rgba(3, 191, 99, 0.2); /* Sombra sutil ao interagir */
-    /* outline: 2px solid var(--color-primary-dark); */
+    box-shadow: 0 4px 8px rgba(3, 191, 99, 0.2);
     outline-offset: 2px;
 }
 
-/* Botões Outline (Ação Secundária) */
+/* Botões de Contorno Primário */
 .btn-outline-primary {
     background-color: transparent !important;
     border-color: var(--color-primary) !important;
@@ -77,13 +83,14 @@ body {
 
 .btn-outline-primary:hover,
 .btn-outline-primary:focus {
+    /* Efeito de hover/foco: inverte cores */
     background-color: var(--color-primary) !important;
     color: var(--color-background-light) !important;
-        /* box-shadow: 0 0 0 0.25rem rgba(3, 191, 99, 0.25);  */
     outline: none;
 }
 
-/* Links em Formulários */
+/* --- ESTILOS DE LINKS GERAIS (Forms/Retorno) --- */
+
 .form-container a, .return a {
     color: var(--color-primary);
     text-decoration: none;
@@ -92,73 +99,74 @@ body {
 
 .form-container a:hover, .return a:hover {
     color: var(--color-primary-dark);
-    text-decoration: underline; /* Feedback claro de que é um link */
+    text-decoration: underline; 
 }
 
-/* --- Layouts de Página --- */
+
+/* --- LAYOUT DA PÁGINA INICIAL (index) --- */
 
 .index-container, .dsbd-container {
+    /* Container principal da página: usa flexbox para controlar altura total e organização */
     display: flex;
     flex-direction: column;
     width: 100%;
     min-height: 100vh;
 }
 
-/* A navegação deve ser consistente */
+/* Navegação Global (Index e Dashboard) */
 .index-nav, .dsbd-nav {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end; /* Mantendo o original */
+    justify-content: flex-end; /* Alinha itens à direita */
     align-items: center;
     padding: var(--spacing-md) var(--spacing-lg);
     background-color: var(--color-background-light);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Sombra sutil para destaque */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Sombra suave para destacar a barra */
 }
-
 
 
 .dsbd-nav {
+    /* Estilo de navegação específico para o Dashboard */
     background-color: var(--color-background-gray);
-    padding: var(--spacing-md) var(--spacing-xl); /* Mais espaçoso no dashboard */
+    padding: var(--spacing-md) var(--spacing-xl); 
 }
 
 .nav-itens, .nav {
+    /* Agrupa itens de navegação com espaçamento */
     display: flex;
-    gap: var(--spacing-sm); /* Espaçamento padrão de 8px entre os itens de navegação */
+    gap: var(--spacing-sm);
 }
 
-/* --- Seção Principal (Main/Hero) --- */
-
+/* Conteúdo Principal (Hero Section) da Index */
 .index-main {
     display: flex;
-    flex-direction: row; /* Alterado para row para layout hero desktop */
+    flex-direction: row;
     align-items: center;
     justify-content: space-around;
-    flex-grow: 1; /* Permite que ocupe o espaço restante */
+    flex-grow: 1; /* Permite que esta seção ocupe o espaço restante */
     padding: var(--spacing-xl);
 }
 
-/* Define a nova classe para o Main */
+/* Altura mínima para a seção principal */
 .min-vh-85 {
-    min-height: 85vh; /* 85% da altura da viewport */
+    min-height: 85vh;
 }
 
-/* style.css */
-
+/* Estilos de Tipografia da Seção Principal */
 .index-txt h2.lead strong {
     font-weight: 700; 
     color: var(--color-text-dark);
 }
 
 .index-txt {
-    /* Garante que o texto ocupe um espaço definido */
+    /* Limita a largura do bloco de texto */
     max-width: 500px;
 }
 
 .index-txt h1 {
     font-size: 3rem;
     font-weight: 700;
-    color: var(--color-primary-dark); /* Destaque na marca */
+    color: var(--color-primary-dark);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -168,36 +176,39 @@ body {
     color: var(--color-text-muted);
 }
 
+/* Estilo da Imagem da Seção Principal */
 .index-img img {
     max-width: 100%;
     height: auto;
 }
 
-/* --- Rodapé --- */
+/* Estilos de Rodapé */
 .index-footer, .dsbd-footer {
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: var(--color-background-gray);
-    height: 70px; /* <--- Diminua este valor */
+    height: 70px; 
     border-top: 1px solid var(--color-border);
 }
 
-/* --- Estilos de Autenticação (auth) --- */
+
+/* --- LAYOUT DE AUTENTICAÇÃO (Login/Cadastro) --- */
 
 .auth-container {
+    /* Layout de duas colunas (Sidebar + Conteúdo) */
     display: flex;
     width: 100%;
     min-height: 100vh;
 }
 
-/* Aside (logo) - Cor de fundo suave */
+/* Coluna Lateral (Visual/Branding) */
 .aside-auth {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 40%;
+    width: 40%; /* Ocupa 40% da largura na versão desktop */
     background-color: var(--color-background-gray);
     padding: var(--spacing-xl);
 }
@@ -205,40 +216,40 @@ body {
 .aside-auth img {
     width: 80%;
     max-width: 400px;
-    opacity: 0.9; /* Suaviza a imagem de fundo/lateral */
+    opacity: 0.9;
 }
 
-/* Main (form) */
+/* Coluna Principal (Formulário) */
 .auth-main {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 60%;
+    width: 60%; /* Ocupa 60% da largura na versão desktop */
     padding: var(--spacing-lg);
     background-color: var(--color-background-light);
 }
 
+/* Container de Formulário */
 .form-container {
     width: 100%;
-    max-width: 450px; /* Levemente mais estreito para melhor foco */
+    max-width: 450px; /* Limita a largura máxima do formulário */
 }
 
 .form-container form {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-md); /* Espaçamento de 16px entre campos */
+    gap: var(--spacing-md);
 }
 
-/* Adiciona estilo de foco aos inputs (UX) */
+/* Estilo de Foco para Inputs */
 .form-container .form-control:focus {
+    /* Cor da borda e sombra no foco, alinhado à cor primária */
     border-color: var(--color-primary);
     box-shadow: 0 0 0 0.25rem rgba(3, 191, 99, 0.25);
 }
 
-
-/* --- Estilos de Feedback (Aprimorados) --- */
-
+/* Estilos de Alerta Personalizados */
 .alert-custom {
     padding: var(--spacing-md);
     margin-bottom: var(--spacing-md);
@@ -248,33 +259,38 @@ body {
 }
 
 .alert-success {
-    /* Contraste melhorado */
-    color: #047857; /* Verde escuro forte */
+    /* Cores de sucesso: verde escuro no texto, verde claro no fundo e borda */
+    color: #047857;
     background-color: #D1FAE5;
     border-color: #6ee7b7;
 }
 
 .alert-danger {
-    /* Contraste melhorado */
+    /* Cores de perigo/erro: vermelho escuro no texto, vermelho claro no fundo e borda */
     color: #991B1B;
     background-color: #FEE2E2;
     border-color: #FCA5A5;
 }
 
-/* --- Responsividade (Ajustado com variáveis de espaçamento) --- */
+
+/* --- RESPONSIVIDADE (MEDIA QUERIES) --- */
+
+/* Adaptando o layout de autenticação para telas menores (Tablets grandes e Laptops) */
 @media (max-width: 1024px) {
     .auth-container {
+        /* Muda o layout de coluna para linha */
         flex-direction: column;
     }
 
     .aside-auth,
     .auth-main {
+        /* Ambos ocupam a largura total */
         width: 100%;
         padding: var(--spacing-lg);
     }
 }
 
-/* --- Responsividade --- */
+/* Reaplicando ajustes de padding para 1024px (Correção/Refinamento) */
 @media (max-width: 1024px) {
   .auth-container {
     flex-direction: column;
@@ -294,6 +310,7 @@ body {
   }
 }
 
+/* Ajustes para Tablets (max-width: 768px) */
 @media (max-width: 768px) {
   .aside-auth img {
     width: 60%;
@@ -301,14 +318,17 @@ body {
   }
 
   .form-container {
+    /* Permite que o container do formulário ocupe mais espaço */
     max-width: 100%;
   }
 
   .form-container form .row {
+    /* Quebra linhas de formulário em colunas verticais */
     flex-direction: column;
   }
 }
 
+/* Ajustes para Smartphones (max-width: 480px) */
 @media (max-width: 480px) {
   .aside-auth img {
     width: 50%;

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LabKey - Projeto e Equipe</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.4.3/dist/css/coreui.min.css"
+      rel="stylesheet"
+      integrity="sha384-oMIIhJL1T5s+PxJr6+Qb0pO1IRFB6OGMM+J57UBT3UQKxSVsb++MkXpu9cLqaJxu"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@coreui/icons/css/coreui-icons.min.css"
+    />
+    
+    <style>
+        :root {
+            --labkey-green: #03bf63;
+            --labkey-dark: #00944c; 
+        }
+
+        body {
+            background-color: #f0f2f5;
+        }
+
+        .header-section {
+            background-color: #ffffff; 
+            padding: 40px 0;
+            margin-bottom: 40px;
+            border-bottom: 3px solid var(--labkey-green); 
+        }
+
+        .section-title {
+            color: var(--labkey-dark);
+            font-weight: 600;
+        }
+        
+        .scroll-container {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 20px; 
+            gap: 20px; 
+            -webkit-overflow-scrolling: touch; 
+        }
+        
+        .scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .scroll-container::-webkit-scrollbar-thumb {
+            background-color: var(--labkey-green);
+            border-radius: 10px;
+        }
+        .scroll-container::-webkit-scrollbar-track {
+            background: #e0e0e0;
+        }
+
+
+        .member-card {
+            flex: 0 0 250px; 
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .member-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .member-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--labkey-green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            border: 3px solid var(--labkey-dark);
+        }
+
+        .member-photo i {
+            font-size: 3rem;
+        }
+
+        .member-name {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 3px;
+            font-weight: 600;
+        }
+
+        .member-role {
+            font-size: 1rem;
+            color: var(--labkey-dark);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container py-5">
+        <a href="/index.html" class="btn btn-outline-secondary mb-4">
+            <i class="c-icon cil-arrow-left"></i> Voltar ao Início
+        </a>
+
+        <header class="header-section shadow-sm mb-5">
+            <div class="container">
+                <h1 class="display-5 text-center mb-3 section-title">LabKey: Gestão e Controle de Reservas</h1>
+                <p class="lead text-center">Conheça o projeto e sua equipe de desenvolvimento.</p>
+            </div>
+        </header>
+
+        <div class="card p-4 shadow-sm mb-5">
+            <h3 class="section-title mb-3">Resumo do Projeto e Público Alvo</h3>
+            <p>
+                O **LabKey** tem como objetivo facilitar a gestão e controle das reservas de chaves dos laboratórios, garantindo que o uso das chaves seja organizado, evitando conflitos e agendamentos duplicados. Os usuários poderão reservar as chaves para períodos específicos de forma prática e segura.
+            </p>
+            <p>
+                O sistema é destinado a um Público Alvo diversificado, incluindo: 
+                <ul>
+                    <li>
+                        <strong>Docentes:</strong> Professores, técnicos e gestores que necessitam de acesso organizado aos laboratórios para aulas, pesquisas e atividades administrativas.
+                    </li>
+                    <li>
+                        <strong>Discentes:</strong> Alunos que utilizam os laboratórios para projetos, monitorias ou atividades acadêmicas.
+                    </li>
+                    <li>
+                        <strong>Terceirizados:</strong> Auxiliares de limpeza e técnicos que precisam acessar os laboratórios para realizar serviços de limpeza e manutenção.
+                    </li>
+                </ul>
+            </p>
+        </div>
+
+        <hr>
+
+        <h2 class="text-center mb-4 mt-4 section-title">Membros da Equipe de Desenvolvimento</h2>
+
+        <div id="teamScrollContainer" class="scroll-container shadow-sm p-3 rounded">
+            </div>
+
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.4.3/dist/js/coreui.bundle.min.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      const equipe = [
+    { nome: 'Athiely Taiany Fernandes Araújo', funcao: 'Documentação', foto: 'static/images/team/athiely.jpg' },
+    { nome: 'Igor Bruno Arruda Soares Araújo', funcao: 'Desenvolvedor', foto: 'static/images/team/igor.jpg' },
+    { nome: 'Joaquim Antônio de Medeiros Silva', funcao: 'Desenvolvedor', foto: 'assets/images/team/joaquim.jpg' },
+    { nome: 'Licurgo Keven Medeiros Cavalcanti', funcao: 'Desenvolvedor', foto: 'static/images/team/keven.jpeg' },
+    { nome: 'Maria Eduarda de Andrade Silva', funcao: 'Desenvolvedora', foto: 'assets/images/team/maria.jpg' },
+    { nome: 'Melissa Karen Ramalho dos Santos', funcao: 'Desenvolvedora', foto: 'assets/images/team/melissa.jpg' }
+];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('teamScrollContainer');
+
+            if (!container) {
+                console.error("Erro ao encontrar o container de rolagem da equipe.");
+                return;
+            }
+
+            equipe.forEach(membro => {
+                
+                const cardHTML = `
+                    <div class="member-card">
+                        <div class="member-photo">
+                            <i class="c-icon ${membro.icone}"></i>
+                        </div>
+                        
+                        <h4 class="member-name">${membro.nome}</h4>
+                        
+                        <p class="member-role">${membro.funcao}</p>
+                    </div>
+                `;
+                
+                container.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        });
+    </script>
+
+</body>
+</html>

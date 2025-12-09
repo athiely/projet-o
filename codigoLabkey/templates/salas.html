@@ -487,7 +487,6 @@
           });
 
           if (response.status === 204) {
-            // Sucesso na exclusão (No Content)
             alert(`Sala "${nomeSala}" excluída com sucesso.`);
             hideCoreUIModal("modalConfirmacaoExclusao");
             window.location.reload();
@@ -501,17 +500,14 @@
             "Falha na exclusão da sala: " +
               (err.message || "Erro desconhecido.")
           );
-          hideCoreUIModal("modalConfirmacaoExclusao"); // Fecha modal em caso de erro
+          hideCoreUIModal("modalConfirmacaoExclusao");
         }
       });
     }
 
     if (btnEditarSala) {
       btnEditarSala.addEventListener("click", function () {
-        // Esconde o modal de detalhes
         hideCoreUIModal("modalDetalhesSala");
-
-        // Obtém os dados do próprio botão
         const id = this.getAttribute("data-sala-id");
         const nome = this.getAttribute("data-sala-nome");
         const capacidade = this.getAttribute("data-sala-capacidade");
@@ -538,21 +534,16 @@
       });
     }
 
-    // -------------------------------------
-    // 6. Ação: EDITAR SALA (Submissão - PUT /api/v1/salas/{id})
-    // -------------------------------------
     const formEdicao = document.getElementById("formEdicaoSala");
     if (formEdicao) {
       formEdicao.addEventListener("submit", async function (event) {
         event.preventDefault();
-        // Pega o ID que foi setado no data-sala-id do formulário
         const idParaEditar = this.getAttribute("data-sala-id");
         if (!idParaEditar)
           return alert("Erro: ID da sala não encontrado para edição.");
 
         const formData = new FormData(formEdicao);
         const data = {};
-        // O nome do input é usado no Template 1/2 para montar o payload, é importante manter o `name`
         formData.forEach(
           (value, key) =>
             (data[key] = key === "capacidade" ? parseInt(value) : value || null)

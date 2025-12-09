@@ -4,34 +4,54 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}LabKey - Sistema de Reservas{% endblock %}</title>
-    <!-- CoreUI CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.4.3/dist/css/coreui.min.css"
       rel="stylesheet"
       integrity="sha384-oMIIhJL1T5s+PxJr6+Qb0pO1IRFB6OGMM+J57UBT3UQKxSVsb++MkXpu9cLqaJxu"
       crossorigin="anonymous"
     />
-    <!-- CSS Personalizado -->
+    <style>
+      #labkey-logo {
+        height: 60px;
+        width: auto;
+        vertical-align: middle;
+      }
+    </style>
     <link rel="stylesheet" href="/static/css/style.css" />
   </head>
   <body>
     <div class="dsbd-container">
       <nav class="dsbd-nav navbar navbar-expand-lg">
-        <a class="navbar-brand" href="/dashboard">LabKey</a>
+        <a class="navbar-brand" href="/dashboard"
+          ><img id="labkey-logo" src="/static/images/logo_labkey.png" alt=""
+        /></a>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="/salas">Salas</a></li>
           <li class="nav-item">
             <a class="nav-link" href="/reservas">Reservas</a>
           </li>
-          <!-- Exibição do Nome do Usuário (Opcional) -->
           {% if nome %}
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-coreui-toggle="dropdown" aria-expanded="false">
-              Olá, {{ nome.split(' ')[0] }} 
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-coreui-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Olá, {{ nome.split(' ')[0] }}
             </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="#">Perfil ({{ tipo_usuario }})</a></li>
-              <li><hr class="dropdown-divider"></li>
+            <ul
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="navbarDropdown"
+            >
+              <li>
+                <a class="dropdown-item" href="#"
+                  >Perfil ({{ tipo_usuario }})</a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li>
               <li><a class="dropdown-item" href="/logout">Sair</a></li>
             </ul>
           </li>
@@ -52,14 +72,12 @@
       </footer>
     </div>
 
-    <!-- CoreUI JAVASCRIPT BUNDLE (DEVE SER CARREGADO PRIMEIRO) -->
     <script
       src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.4.3/dist/js/coreui.bundle.min.js"
       xintegrity="sha384-SWhFOmxmv1pfTLKVBW7q8uossvuaWNeQFdmaWi6xdldiUjyqG9F6V2R2BOC8gkxx"
       crossorigin="anonymous"
     ></script>
 
-    <!-- PONTO DE INJEÇÃO DE SCRIPTS ESPECÍFICOS DA PÁGINA -->
     {% block scripts %}{% endblock %}
   </body>
 </html>
